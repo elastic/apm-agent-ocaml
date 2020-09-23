@@ -1,0 +1,3 @@
+(executable
+  (name main)
+  (libraries elastic_apm lwt.unix ppx_deriving_yojson))

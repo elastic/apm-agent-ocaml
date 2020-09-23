@@ -19,8 +19,10 @@
  (synopsis "Elastic Application Performance Monitoring (APM) client library")
  (depends
   (ocaml (>= 4.08.0))
+  (cohttp-lwt-unix (>= 2.5.4))
   (dune (>= 2.5.0))
   (ppx_deriving (>= 4.5))
   (ptime (>= 0.8.5))
   (uri (>= 3.0.0))
+  (uuidm (>= 0.9.7))
   (yojson (>= 1.6.0))))

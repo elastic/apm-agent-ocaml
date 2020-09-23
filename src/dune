@@ -2,4 +2,4 @@
   (name elastic_apm)
   (public_name elastic-apm)
   (preprocess (pps ppx_deriving_yojson))
-  (libraries uri yojson))
+  (libraries uri yojson ppx_deriving_yojson.runtime uuidm cohttp-lwt-unix mtime.clock.os))
