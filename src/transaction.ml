@@ -1,10 +1,8 @@
 open Utils
 
-type span_count = {
-  started : int;
-} [@@deriving yojson]
+type span_count = { started : int } [@@deriving yojson]
 
-let sc = { started=0 }
+let sc = { started = 0 }
 
 type t = {
   id : string;
@@ -16,7 +14,8 @@ type t = {
   duration : float;
   ttype : string; [@key "type"]
   span_count : span_count;
-} [@@deriving yojson]
+}
+[@@deriving yojson]
 
 let make_transaction name ttype =
   let trace_id = Some (make_id ()) in
@@ -27,6 +26,17 @@ let make_transaction name ttype =
   let now = Mtime_clock.counter () in
   let aux () =
     let finished_time = Mtime_clock.count now in
-    let duration  = Mtime.Span.to_ms finished_time in
-    { id; name; trace_id; transaction_id; timestamp; parent_id; duration; ttype; span_count=sc }
-  in aux
+    let duration = Mtime.Span.to_ms finished_time in
+    {
+      id;
+      name;
+      trace_id;
+      transaction_id;
+      timestamp;
+      parent_id;
+      duration;
+      ttype;
+      span_count = sc;
+    }
+  in
+  aux

@@ -3,7 +3,8 @@ open Utils
 type texception = {
   message : string;
   exntype : string; [@key "type"]
-} [@@deriving yojson]
+}
+[@@deriving yojson]
 
 type t = {
   id : string;
@@ -12,7 +13,8 @@ type t = {
   transaction_id : string option;
   parent_id : string option;
   texception : texception; [@key "exception"]
-} [@@deriving yojson]
+}
+[@@deriving yojson]
 
 let make_e e =
   let message = Printexc.to_string e in
