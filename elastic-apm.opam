@@ -10,14 +10,16 @@ authors: [
   "Hezekiah M. Carty <hezekiah.carty@elastic.co>"
 ]
 license: "Apache-2.0"
-homepage: "https://github.com/elastic/ocaml-apm"
-bug-reports: "https://github.com/elastic/ocaml-apm/issues"
+homepage: "https://github.com/elastic/apm-agent-ocaml"
+bug-reports: "https://github.com/elastic/apm-agent-ocaml/issues"
 depends: [
   "ocaml" {>= "4.08.0"}
+  "cohttp-lwt-unix" {>= "2.5.4"}
   "dune" {>= "2.5.0"}
   "ppx_deriving" {>= "4.5"}
   "ptime" {>= "0.8.5"}
   "uri" {>= "3.0.0"}
+  "uuidm" {>= "0.9.7"}
   "yojson" {>= "1.6.0"}
 ]
 build: [
@@ -34,4 +36,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/elastic/ocaml-apm.git"
+dev-repo: "git+https://github.com/elastic/apm-agent-ocaml.git"

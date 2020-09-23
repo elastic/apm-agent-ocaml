@@ -10,7 +10,7 @@
  "Adam Ringwood <adam.ringwood@elastic.co>"
  "Hezekiah M. Carty <hezekiah.carty@elastic.co>")
 
-(source (github elastic/ocaml-apm))
+(source (github elastic/apm-agent-ocaml))
 
 (generate_opam_files true)
 
