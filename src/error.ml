@@ -1,10 +1,12 @@
-open Utils
+module Exception = struct
+  type t = {
+    message : string;
+    type_ : string; [@key "type"]
+  }
+  [@@deriving to_yojson, make]
 
-type texception = {
-  message : string;
-  exntype : string; [@key "type"]
-}
-[@@deriving yojson]
+  let make (exn : exn) : t = make ~message:(Printexc.to_string exn) ~type_:"exn"
+end
 
 type t = {
   id : string;
@@ -12,20 +14,15 @@ type t = {
   trace_id : string option;
   transaction_id : string option;
   parent_id : string option;
-  texception : texception; [@key "exception"]
+  exception_t : Exception.t; [@key "exception"]
 }
-[@@deriving yojson]
+[@@deriving to_yojson, make]
 
-let make_e e =
-  let message = Printexc.to_string e in
-  let exntype = "EXN" in
-  { message; exntype }
-
-let make_error e =
-  let trace_id = Some (make_id ()) in
-  let transaction_id = Some (make_id ()) in
-  let parent_id = Some (make_id ()) in
-  let id = make_id () in
-  let timestamp = Unix.time () |> int_of_float |> fun x -> x * 1000 in
-  let texception = make_e e in
-  { id; trace_id; transaction_id; texception; timestamp; parent_id }
+let make (exn : exn) : t =
+  let id = Id.make () in
+  let timestamp = Timestamp.now_ms () in
+  let trace_id = Id.make () in
+  let transaction_id = Id.make () in
+  let parent_id = Id.make () in
+  let exception_t = Exception.make exn in
+  make ~id ~timestamp ~trace_id ~transaction_id ~parent_id ~exception_t ()

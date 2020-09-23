@@ -1,8 +1,6 @@
-open Utils
+type span_count = { started : int } [@@deriving to_yojson]
 
-type span_count = { started : int } [@@deriving yojson]
-
-let sc = { started = 0 }
+let no_span = { started = 0 }
 
 type t = {
   id : string;
@@ -12,31 +10,24 @@ type t = {
   transaction_id : string option;
   parent_id : string option;
   duration : float;
-  ttype : string; [@key "type"]
+  type_ : string; [@key "type"]
   span_count : span_count;
 }
-[@@deriving yojson]
+[@@deriving to_yojson, make]
 
-let make_transaction name ttype =
-  let trace_id = Some (make_id ()) in
-  let transaction_id = Some (make_id ()) in
-  let parent_id = Some (make_id ()) in
-  let id = make_id () in
-  let timestamp = Unix.time () |> int_of_float |> fun x -> x * 1000 in
+let make_transaction
+    ?(parent_id = Id.make ())
+    ?(trace_id = Id.make ())
+    ~name
+    ~type_ =
+  let id = Id.make () in
+  let timestamp = Timestamp.now_ms () in
+  let transaction_id = Id.make () in
   let now = Mtime_clock.counter () in
-  let aux () =
+  let finished () =
     let finished_time = Mtime_clock.count now in
     let duration = Mtime.Span.to_ms finished_time in
-    {
-      id;
-      name;
-      trace_id;
-      transaction_id;
-      timestamp;
-      parent_id;
-      duration;
-      ttype;
-      span_count = sc;
-    }
+    make ~id ~name ~timestamp ~trace_id ~transaction_id ~parent_id ~duration
+      ~type_ ~span_count:no_span ()
   in
-  aux
+  finished
