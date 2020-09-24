@@ -4,19 +4,20 @@ let url =
 let secret_token = "BxsUCry2J82rYTr9Xq"
 let service_name = "veryRealService"
 
-let foobar () = Unix.sleep 10
+let foobar () = Lwt_unix.sleep 10.0
 
 let foobar2 () =
   let () = Unix.sleep 5 in
   failwith "crash now."
 
 let main () =
-  let c = Elastic_apm.Context.make ~secret_token ~service_name ~url () in
-  let (e, _results) =
-    Elastic_apm.Apm.with_transaction ~name:"foobar" ~type_:"http" foobar
+  let ( let* ) = Lwt.bind in
+  let context = Elastic_apm.Context.make ~secret_token ~service_name ~url () in
+  Elastic_apm.Apm.init context;
+  let* () =
+    Elastic_apm.Apm.with_transaction_lwt ~name:"foobar" ~type_:"http" foobar
   in
-  let r = Elastic_apm.Message.send c e in
-  let (_response, body) = Lwt_main.run r in
-  print_endline body
+  (* Sleep a bit longer to give the sender time to do its job *)
+  Lwt_unix.sleep 10.0
 
-let () = main ()
+let () = Lwt_main.run (main ())
