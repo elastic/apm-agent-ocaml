@@ -4,15 +4,36 @@ let url =
 let secret_token = "BxsUCry2J82rYTr9Xq"
 let service_name = "veryRealService"
 
-let foobar () = Lwt_unix.sleep 10.0
+module Bar = struct
+  let test2 () = failwith "crash now."
+
+  let test1 () =
+    let () = Unix.sleep 1 in
+    test2 ()
+end
+
+module Foo = struct
+  let test1 () =
+    let () = Unix.sleep 1 in
+    Bar.test1 ()
+
+  let test2 () = test1 ()
+end
+
+let foobar () = Lwt.return @@ Unix.sleep 1
 
 let foobar2 () =
-  let () = Unix.sleep 5 in
-  failwith "crash now."
+  let helloworld1 () = Unix.sleep 1 in
+  let bazfoo2 () = Unix.sleep 1 in
+  let () = helloworld1 () in
+  let () = Foo.test2 () in
+  let () = bazfoo2 () in
+  print_endline "crash now."
 
 let main () =
   let ( let* ) = Lwt.bind in
   let context = Elastic_apm.Context.make ~secret_token ~service_name ~url () in
+  let () = (Printexc.record_backtrace true) in
   Elastic_apm.Apm.init context;
   let* () =
     Elastic_apm.Apm.with_transaction_lwt ~name:"foobar" ~type_:"http" foobar

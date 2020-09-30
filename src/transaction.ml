@@ -26,7 +26,7 @@ let make_transaction
   let now = Mtime_clock.counter () in
   let finished () =
     let finished_time = Mtime_clock.count now in
-    let duration = Mtime.Span.to_ms finished_time in
+    let duration = Mtime.Span.to_us finished_time in
     make ~id ~name ~timestamp ~trace_id ~transaction_id ~parent_id ~duration
       ~type_ ~span_count:no_span ()
   in

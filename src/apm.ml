@@ -55,7 +55,8 @@ let with_transaction ~name ~type_ f =
     send [ Transaction (now ()) ];
     x
   | exception exn ->
-    send [ Transaction (now ()); Error (Error.make exn) ];
+    let st = Printexc.get_raw_backtrace () in
+    send [ Transaction (now ()); Error (Error.make st exn) ];
     raise exn
 
 let with_transaction_lwt ~name ~type_ f =
@@ -65,7 +66,8 @@ let with_transaction_lwt ~name ~type_ f =
     Lwt.return x
   in
   let on_failure exn =
-    send [ Transaction (now ()); Error (Error.make exn) ];
+    let st = Printexc.get_raw_backtrace () in
+    send [ Transaction (now ()); Error (Error.make st exn) ];
     Lwt.fail exn
   in
   Lwt.try_bind f on_success on_failure
