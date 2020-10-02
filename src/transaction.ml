@@ -6,28 +6,30 @@ type t = {
   id : string;
   name : string;
   timestamp : int;
-  trace_id : string option;
-  transaction_id : string option;
+  trace_id : string;
   parent_id : string option;
   duration : float;
   type_ : string; [@key "type"]
   span_count : span_count;
+  request : Http.request option;
+  response : Http.response option;
 }
 [@@deriving to_yojson, make]
 
 let make_transaction
-    ?(parent_id = Id.make ())
-    ?(trace_id = Id.make ())
-    ~name
-    ~type_ =
-  let id = Id.make () in
-  let timestamp = Timestamp.now_ms () in
-  let transaction_id = Id.make () in
-  let now = Mtime_clock.counter () in
-  let finished () =
-    let finished_time = Mtime_clock.count now in
-    let duration = Mtime.Span.to_us finished_time in
-    make ~id ~name ~timestamp ~trace_id ~transaction_id ~parent_id ~duration
-      ~type_ ~span_count:no_span ()
+  ?(trace : Trace.t option) ?request ~name ~type_ () =
+  let id = Trace.make_id () in
+  let parent_id, trace_id = match trace with
+    | Some t -> t.transaction_id, t.trace_id
+    | None -> None, Trace.make_id ()
   in
-  finished
+  let timestamp = Timestamp.now_ms () in
+  let now = Mtime_clock.counter () in
+  let finished ?response () =
+    let finished_time = Mtime_clock.count now in
+    let duration = Mtime.Span.to_ms finished_time in
+    let span_count = no_span in
+    make ~id ~name ~timestamp ~trace_id ?parent_id ~duration ~type_ ~span_count ?request ?response ()
+  in
+  let new_trace = { Trace.trace_id; parent_id; transaction_id=(Some id); } in
+  (new_trace, finished)

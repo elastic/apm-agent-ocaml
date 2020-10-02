@@ -48,26 +48,26 @@ let send messages =
   | None -> ()
   | Some _c -> List.iter Message_queue.push messages
 
-let with_transaction ~name ~type_ f =
-  let now = Transaction.make_transaction ~name ~type_ in
+let with_transaction ?trace ~name ~type_ f =
+  let trace, now = Transaction.make_transaction ?trace ~name ~type_ () in
   match f () with
   | x ->
     send [ Transaction (now ()) ];
     x
   | exception exn ->
     let st = Printexc.get_raw_backtrace () in
-    send [ Transaction (now ()); Error (Error.make st exn) ];
+    send [ Transaction (now ()); Error (Error.make ~trace st exn) ];
     raise exn
 
-let with_transaction_lwt ~name ~type_ f =
-  let now = Transaction.make_transaction ~name ~type_ in
+let with_transaction_lwt ?trace ~name ~type_ f =
+  let trace, now = Transaction.make_transaction ?trace ~name ~type_ () in
   let on_success x =
     send [ Transaction (now ()) ];
     Lwt.return x
   in
   let on_failure exn =
     let st = Printexc.get_raw_backtrace () in
-    send [ Transaction (now ()); Error (Error.make st exn) ];
+    send [ Transaction (now ()); Error (Error.make ~trace st exn) ];
     Lwt.fail exn
   in
   Lwt.try_bind f on_success on_failure

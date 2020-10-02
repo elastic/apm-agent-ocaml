@@ -46,11 +46,12 @@ type t = {
 }
 [@@deriving to_yojson, make]
 
-let make st (exn : exn) : t =
+let make ?(trace : Trace.t option) st (exn : exn) : t =
   let id = Id.make () in
   let timestamp = Timestamp.now_ms () in
-  let trace_id = Id.make () in
-  let transaction_id = Id.make () in
-  let parent_id = Id.make () in
+  let trace_id, transaction_id, parent_id = match trace with
+  | Some t -> (Some t.trace_id, t.transaction_id, t.parent_id)
+  | None -> (None, None, None)
+  in
   let exception_t = Exception.make st exn in
-  make ~id ~timestamp ~trace_id ~transaction_id ~parent_id ~exception_t ()
+  make ~id ~timestamp ?trace_id ?transaction_id ?parent_id ~exception_t ()
