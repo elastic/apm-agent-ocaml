@@ -32,7 +32,6 @@ module Exception = struct
 
   let make st (exn : exn) : t =
     let stacktrace = Stack_trace.make_stacktrace st in
-    let () = Printf.printf "stacktrace is %d long.\n" (List.length stacktrace) in
     make  ~message:(Printexc.to_string exn) ~type_:"exn" ~stacktrace
 end
 
@@ -50,6 +49,7 @@ let make ?(trace : Trace.t option) st (exn : exn) : t =
   let id = Id.make () in
   let timestamp = Timestamp.now_ms () in
   let trace_id, transaction_id, parent_id = match trace with
+  | Some { trace_id; transaction_id = Some id; parent_id = None; } -> (Some trace_id, Some id, Some id)
   | Some t -> (Some t.trace_id, t.transaction_id, t.parent_id)
   | None -> (None, None, None)
   in
