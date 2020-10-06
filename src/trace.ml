@@ -45,7 +45,7 @@ let of_headers headers =
 
 let new_child_transaction (trace : t) =
   let parent_id = trace.transaction_id in
-  let transaction_id = make_id () in
+  let transaction_id = Some (make_id ()) in
   { trace with transaction_id; parent_id; }
 
 let to_header_list (trace : t) =
