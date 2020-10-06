@@ -59,13 +59,3 @@ let to_header_list (trace : t) =
 let to_headers trace = Cohttp.Header.of_list (to_header_list trace)
 let add_to_headers headers trace =
   Cohttp.Header.add_list headers (to_header_list trace)
-
-let add_to_tags tags trace =
-  let trace_id : t option =
-    Option.map (fun id -> id) trace.trace_id
-  in
-  let transaction_id : t option =
-    Option.map (fun id -> id) trace.transaction_id
-  in
-  let ids = List.filter_map Fun.id [ trace_id; transaction_id ] in
-  Ecs.add_tags [ Ecs.trace ids ] tags
