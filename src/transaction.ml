@@ -16,7 +16,7 @@ type t = {
   duration : float;
   type_ : string; [@key "type"]
   span_count : span_count;
-  context : context option;
+  context : context;
 }
 [@@deriving to_yojson, make]
 
@@ -34,7 +34,7 @@ let make_transaction
     let duration = Mtime.Span.to_ms finished_time in
     let span_count = no_span in
     let context = make_context ?request ?response () in
-    make ~id ~name ~timestamp ~trace_id ?parent_id ~duration ~type_ ~span_count ?context ()
+    make ~id ~name ~timestamp ~trace_id ?parent_id ~duration ~type_ ~span_count ~context ()
   in
   let new_trace = { Trace.trace_id; parent_id; transaction_id=(Some id); } in
   (new_trace, finished)
