@@ -8,7 +8,7 @@ type url = {
   full : string;
   hostname : string option;
   port : int option;
-  pathname : string option;
+  pathname : string;
 } [@@deriving to_yojson, make]
 
 type request = {
@@ -23,7 +23,7 @@ let of_uri u =
   let hostname = Uri.host u in
   let port = Uri.port u in
   let pathname = Uri.path u in
-  make_url ?protocol ~full ?hostname ?port ?pathname
+  make_url ?protocol ~full ?hostname ?port ~pathname
 
 let make_request ~meth ~uri ~http_version =
   let url = of_uri uri in
