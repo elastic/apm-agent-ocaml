@@ -23,5 +23,8 @@ let of_uri u =
   let hostname = Uri.host u in
   let port = Uri.port u in
   let pathname = Uri.path u in
-  make ~protocol ~full ~hostname ~port ~pathname
+  make_url ~protocol ~full ~hostname ~port ~pathname
 
+let make_request ~meth ~uri ~http_version =
+  let url = of_uri uri in
+  make_request ~meth ~url ~http_version
