@@ -27,4 +27,4 @@ let of_uri u =
 
 let make_request ~meth ~uri ~http_version =
   let url = of_uri uri in
-  make_request ~meth ~url ~http_version ()
+  make_request ~meth ~url ~http_version
