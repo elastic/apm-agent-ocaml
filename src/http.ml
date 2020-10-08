@@ -12,7 +12,7 @@ type url = {
 } [@@deriving to_yojson, make]
 
 type request = {
-  meth : string;
+  meth : string; [@key "method"]
   url : url;
   http_version : string;
 } [@@deriving to_yojson, make]
