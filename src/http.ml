@@ -1,6 +1,6 @@
 type response = {
   status_code : int;
-  transfer_size : int;
+  transfer_size : int option;
 } [@@deriving to_yojson, make]
 
 type url = {
@@ -25,6 +25,6 @@ let of_uri u =
   let pathname = Uri.path u in
   make_url ?protocol ~full ?hostname ?port ~pathname ()
 
-let make_request ~meth ~uri ~http_version =
+let make_request ~meth ~uri ?http_version =
   let url = of_uri uri in
-  make_request ~meth ~url ~http_version
+  make_request ~meth ~url ?http_version ()
