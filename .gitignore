@@ -1,0 +1,9 @@
+# OCaml
+_build/
+_opam/
+_opam
+*.install
+.merlin
+
+# Editor files
+.vscode/
