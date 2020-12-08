@@ -49,7 +49,7 @@ let send messages =
   | Some _c -> List.iter Message_queue.push messages
 
 let with_transaction ?trace ~name ~type_ f =
-  let trace, now = Transaction.make_transaction ?trace ~name ~type_ () in
+  let (trace, now) = Transaction.make_transaction ?trace ~name ~type_ () in
   match f () with
   | x ->
     send [ Transaction (now ()) ];
@@ -60,7 +60,7 @@ let with_transaction ?trace ~name ~type_ f =
     raise exn
 
 let with_transaction_lwt ?trace ~name ~type_ f =
-  let trace, now = Transaction.make_transaction ?trace ~name ~type_ () in
+  let (trace, now) = Transaction.make_transaction ?trace ~name ~type_ () in
   let on_success x =
     send [ Transaction (now ()) ];
     Lwt.return x

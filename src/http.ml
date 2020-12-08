@@ -1,7 +1,8 @@
 type response = {
   status_code : int;
   transfer_size : int option;
-} [@@deriving to_yojson, make]
+}
+[@@deriving to_yojson, make]
 
 type url = {
   protocol : string option;
@@ -9,13 +10,15 @@ type url = {
   hostname : string option;
   port : int option;
   pathname : string;
-} [@@deriving to_yojson, make]
+}
+[@@deriving to_yojson, make]
 
 type request = {
   meth : string; [@key "method"]
   url : url;
   http_version : string;
-} [@@deriving to_yojson, make]
+}
+[@@deriving to_yojson, make]
 
 let of_uri u =
   let protocol = Uri.scheme u in

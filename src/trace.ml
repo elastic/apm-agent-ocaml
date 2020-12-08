@@ -25,7 +25,7 @@ let add_transaction_id (trace : t) uuid =
 
 let init () =
   let trace_id = make_id () in
-  {  trace_id; transaction_id = None; parent_id = None; }
+  { trace_id; transaction_id = None; parent_id = None }
 
 let add_transaction_id_if_missing (trace : t) : t =
   match trace.transaction_id with
@@ -35,9 +35,10 @@ let add_transaction_id_if_missing (trace : t) : t =
     { trace with transaction_id }
 
 let of_headers headers =
-  let trace_id = match Cohttp.Header.get headers ecs_trace_id_header with
-  | Some id -> id
-  | None -> make_id ()
+  let trace_id =
+    match Cohttp.Header.get headers ecs_trace_id_header with
+    | Some id -> id
+    | None -> make_id ()
   in
   let transaction_id = Cohttp.Header.get headers ecs_transaction_id_header in
   let parent_id = None in
@@ -46,7 +47,7 @@ let of_headers headers =
 let new_child_transaction (trace : t) =
   let parent_id = trace.transaction_id in
   let transaction_id = Some (make_id ()) in
-  { trace with transaction_id; parent_id; }
+  { trace with transaction_id; parent_id }
 
 let to_header_list (trace : t) =
   List.filter_map
