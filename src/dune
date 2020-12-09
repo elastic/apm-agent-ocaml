@@ -4,4 +4,4 @@
  (preprocess
   (pps ppx_deriving_yojson ppx_deriving.std))
  (libraries uri yojson ppx_deriving_yojson.runtime uuidm cohttp-lwt-unix
-   mtime.clock.os))
+   mtime.clock.os dune-build-info))
