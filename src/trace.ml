@@ -14,31 +14,25 @@ let pp ppf (trace : t) =
 let ecs_trace_id_header = "ecs-trace-id"
 let ecs_transaction_id_header = "ecs-transaction-id"
 
-let make_uuid =
-  let state = Random.State.make_self_init () in
-  Uuidm.v4_gen state
-
-let make_id () = make_uuid () |> Uuidm.to_string
-
 let add_transaction_id (trace : t) uuid =
   { trace with transaction_id = Some (Uuidm.to_string uuid) }
 
 let init () =
-  let trace_id = make_id () in
+  let trace_id = Id.make () in
   { trace_id; transaction_id = None; parent_id = None }
 
 let add_transaction_id_if_missing (trace : t) : t =
   match trace.transaction_id with
   | Some _ -> trace
   | None ->
-    let transaction_id = Some (make_uuid () |> Uuidm.to_string) in
+    let transaction_id = Some (Id.make ()) in
     { trace with transaction_id }
 
 let of_headers headers =
   let trace_id =
     match Cohttp.Header.get headers ecs_trace_id_header with
     | Some id -> id
-    | None -> make_id ()
+    | None -> Id.make ()
   in
   let transaction_id = Cohttp.Header.get headers ecs_transaction_id_header in
   let parent_id = None in
@@ -46,7 +40,7 @@ let of_headers headers =
 
 let new_child_transaction (trace : t) =
   let parent_id = trace.transaction_id in
-  let transaction_id = Some (make_id ()) in
+  let transaction_id = Some (Id.make ()) in
   { trace with transaction_id; parent_id }
 
 let to_header_list (trace : t) =

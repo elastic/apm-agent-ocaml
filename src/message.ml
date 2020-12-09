@@ -26,7 +26,7 @@ let make_body (context : Context.t) (events : t list) =
 
 let send (context : Context.t) (events : t list) =
   let ( let* ) = Lwt.bind in
-  let uri = Uri.with_path context.url "/intake/v2/events" in
+  let uri = Uri.with_path context.apm_server "/intake/v2/events" in
   let headers = Cohttp.Header.of_list (make_headers context) in
   let body = Cohttp_lwt.Body.of_string (make_body context events) in
   let* (response, response_body) =

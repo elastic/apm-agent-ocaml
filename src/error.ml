@@ -1,7 +1,7 @@
 module Stack_trace = struct
   type stack_frame = {
     filename : string option;
-    fn : string option; [@key "function"]
+    function_ : string option; [@key "function"]
     lineno : int option;
     colno : int option;
   }
@@ -11,13 +11,13 @@ module Stack_trace = struct
 
   let make_stacktrace (st : Printexc.raw_backtrace) : t =
     let make_slot slot : stack_frame =
-      let fn = Printexc.Slot.name slot in
+      let function_ = Printexc.Slot.name slot in
       let (lineno, colno, filename) =
         match Printexc.Slot.location slot with
         | Some l -> (Some l.line_number, Some l.start_char, Some l.filename)
         | None -> (None, None, None)
       in
-      { fn; filename; lineno; colno }
+      { function_; filename; lineno; colno }
     in
     match Printexc.backtrace_slots st with
     | None -> []
@@ -43,7 +43,7 @@ type t = {
   trace_id : string option;
   transaction_id : string option;
   parent_id : string option;
-  exception_t : Exception.t; [@key "exception"]
+  exception_ : Exception.t; [@key "exception"]
 }
 [@@deriving to_yojson, make]
 
@@ -57,5 +57,5 @@ let make ?(trace : Trace.t option) st (exn : exn) : t =
     | Some t -> (Some t.trace_id, t.transaction_id, t.parent_id)
     | None -> (None, None, None)
   in
-  let exception_t = Exception.make st exn in
-  make ~id ~timestamp ?trace_id ?transaction_id ?parent_id ~exception_t ()
+  let exception_ = Exception.make st exn in
+  make ~id ~timestamp ?trace_id ?transaction_id ?parent_id ~exception_ ()

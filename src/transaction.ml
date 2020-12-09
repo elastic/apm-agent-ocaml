@@ -22,11 +22,11 @@ type t = {
 [@@deriving to_yojson, make]
 
 let make_transaction ?(trace : Trace.t option) ?request ~name ~type_ () =
-  let id = Trace.make_id () in
+  let id = Id.make () in
   let (parent_id, trace_id) =
     match trace with
     | Some t -> (t.transaction_id, t.trace_id)
-    | None -> (None, Trace.make_id ())
+    | None -> (None, Id.make ())
   in
   let timestamp = Timestamp.now_ms () in
   let now = Mtime_clock.counter () in
