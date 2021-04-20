@@ -21,7 +21,9 @@
   (ocaml (>= 4.08.0))
   (cohttp-lwt-unix (>= 2.5.4))
   (dune (>= 2.5.0))
+  dune-build-info
   (ppx_deriving (>= 4.5))
+  ppx_deriving_yojson
   (ptime (>= 0.8.5))
   (uri (>= 3.0.0))
   (uuidm (>= 0.9.7))
