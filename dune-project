@@ -1,4 +1,4 @@
-(lang dune 2.5)
+(lang dune 2.9)
 
 (name elastic-apm)
 
@@ -20,8 +20,8 @@
  (depends
   (ocaml (>= 4.08.0))
   (cohttp-lwt-unix (>= 2.5.4))
-  (dune (>= 2.5.0))
-  (dune-build-info (>= 2.5.0))
+  (dune (>= 2.9.1))
+  (dune-build-info (>= 2.9.1))
   (ppx_deriving (>= 4.5))
   (ppx_deriving_yojson (>= 3.5.3))
   (ptime (>= 0.8.5))
