@@ -22,7 +22,8 @@ module Sender = struct
       Log.warn (fun m ->
           m "APM server response %d: %s"
             (Cohttp.Code.code_of_status response.status)
-            body)
+            body
+      )
 
   let sleep () = Lwt_unix.sleep 5.0
   let rec run_forever () =
