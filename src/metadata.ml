@@ -10,7 +10,13 @@ let current_process =
   let argv = Sys.argv |> Array.to_list in
   let title = Sys.executable_name in
   let pid = Unix.getpid () in
-  let ppid = Unix.getppid () in
+  let ppid =
+    if Sys.win32 then
+      (* Unix.getppid is not available on Windows *)
+      pid
+    else
+      Unix.getppid ()
+  in
   make_process ~pid ~title ~ppid ~argv ()
 
 type system = {
