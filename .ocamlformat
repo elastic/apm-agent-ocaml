@@ -1,0 +1,4 @@
+version = 0.19.0
+profile = conventional
+parse-docstring = true
+wrap-comments = true
