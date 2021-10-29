@@ -4,3 +4,10 @@
   (pps ppx_yojson_conv))
  (public_name elastic-apm.core)
  (libraries mtime ptime yojson))
+
+(rule
+ (targets elastic_apm_generated_sysinfo.ml)
+ (action
+  (with-stdout-to
+   %{targets}
+   (run ../codegen/system_info.exe))))

@@ -27,5 +27,6 @@
   (ocaml
    (>= 4.08.0))
   mtime
+  dune-configurator
   (ptime
    (>= 0.8.5))))
