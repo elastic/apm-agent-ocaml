@@ -5,12 +5,15 @@
 (license Apache-2.0)
 
 (maintainers
- "Adam Ringwood <adam.ringwood@elastic.co>"
- "Hezekiah M. Carty <hezekiah.carty@elastic.co>")
+ "Hezekiah M. Carty <hezekiah.carty@elastic.co>"
+ "Pete Hampton <peter.hampton@elastic.co>"
+ "Anurag Soni <anurag.soni@elastic.co>")
 
 (authors
  "Adam Ringwood <adam.ringwood@elastic.co>"
- "Hezekiah M. Carty <hezekiah.carty@elastic.co>")
+ "Hezekiah M. Carty <hezekiah.carty@elastic.co>"
+ "Pete Hampton <peter.hampton@elastic.co>"
+ "Anurag Soni <anurag.soni@elastic.co>")
 
 (source
  (github elastic/apm-agent-ocaml))
