@@ -1,35 +1,38 @@
-## Elastic OCaml APM
+# OCaml agent for Elastic APM
 
-Note: This software is in extremely early stages, to the point that it doesn't support the full api and may still contain significant bugs. It has not undergone usage in our production environments and you probably shouldn't use it in production without extensive testing. To borrow a phrase from my colleague, if it breaks, you get to keep both halves.
+## Dev setup
 
-Given this, you can find the current version under `early-wip` branch to reflect that nature.
+Clone
 
-This library is an attempt to allow for detailed APM tracking of modern OCaml applications. Currently it supports error trapping and sending it in the context of a trace/transaction and sending detailed information about a transaction. It does not yet support metrics or (http/db) spans although we have plans to support both in the coming releases.
-
-Currently if you use this with the current version of Elastic APM, it should support most of the basic APM dashboards with exception of the service map. Notably the waterfall request graph does work if you manually propagate the trace header between the services. If you don't need distributed tracing, you can make a seperate trace id for each request when it's being process.
-
-## How does it work?
-
-### Initialization
-
-```ocaml
-let init () =
-  let service_name = "service_helloworld" in
-  (* url/secret token are strings you get from kibana. *)
-  let context = Elastic_apm.Context.make ~secret_token ~service_name ~url () in
-  (* you don't have to enable backtraces but it's very useful in my opinion.
-  Even more so on projects without lwt.*)
-  let () = (Printexc.record_backtrace true) in
-  Elastic_apm.Apm.init context;
+```bash
+git clone git@github.com:elastic/apm-agent-ocaml-on-week-2021.git
+cd apm-agent-ocaml-on-week-2021
 ```
 
-### Transactions & Error Handling
+Setup OCaml environment
 
-```ocaml
-let trace_with_work () =
-  let name = "/route_a/method_1" in
-  let trace = Elastic_apm.Trace.of_headers original_headers in
-  let new_trace, now = Elastic_apm.Transaction.make_transaction ~trace ~name () in
-  let results = do_work () in
-  Elastic_apm.Apm.send [ Transaction (now ()); ];
+```bash
+opam switch init . 4.13.1
+opam install ocamlformat ocamlformat-rpc ocaml-lsp-server
 ```
+
+You can run a build in watch mode so new changes are automatically detected and
+rebuilt. In a terminal, in or outside of your editor:
+
+```bash
+dune build -w
+```
+
+If you don't have it already, watch mode needs `fswatch` which can be installed
+via `brew`:
+
+```bash
+brew install fswatch
+```
+
+If you're using vscode, install the OCaml Platform plugin by OCaml Labs. The
+OCaml plugin should automatically detect the local opam switch you just created.
+If you setup format on save in the editor it will automatically format new
+changes via the LSP server to conform to the project's standard formatting.
+
+Now hackity hackity hack ON!
