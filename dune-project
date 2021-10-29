@@ -23,7 +23,5 @@
  (depends
   (ocaml
    (>= 4.08.0))
-  (dune-build-info
-   (>= 2.9.1))
   (ptime
    (>= 0.8.5))))
