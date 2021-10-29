@@ -1,4 +1,6 @@
 (library
  (name elastic_apm_core)
+ (preprocess
+  (pps ppx_yojson_conv))
  (public_name elastic-apm.core)
- (libraries ptime))
+ (libraries ptime yojson))
