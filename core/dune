@@ -1,0 +1,4 @@
+(library
+ (name elastic_apm_core)
+ (public_name elastic-apm.core)
+ (libraries ptime))
