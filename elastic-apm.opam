@@ -19,6 +19,7 @@ depends: [
   "dune" {>= "2.9"}
   "ocaml" {>= "4.08.0"}
   "mtime"
+  "dune-configurator"
   "ptime" {>= "0.8.5"}
   "odoc" {with-doc}
 ]
