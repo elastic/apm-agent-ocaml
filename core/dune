@@ -3,4 +3,4 @@
  (preprocess
   (pps ppx_yojson_conv))
  (public_name elastic-apm.core)
- (libraries ptime yojson))
+ (libraries mtime ptime yojson))

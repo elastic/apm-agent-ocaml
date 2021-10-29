@@ -1,5 +1,5 @@
-type t = Ptime.Span.t
+type t = Mtime.Span.t
 
-let yojson_of_t t = `Float (Ptime.Span.to_float_s t *. 1000.)
+let yojson_of_t t = `Float (Mtime.Span.to_ms t)
 
 let of_span t = t

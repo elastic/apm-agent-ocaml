@@ -23,5 +23,6 @@
  (depends
   (ocaml
    (>= 4.08.0))
+  mtime
   (ptime
    (>= 0.8.5))))
