@@ -47,3 +47,40 @@ module Runtime : sig
 
   val t : t
 end
+
+module Cloud : sig
+  type id_with_name = { id : string; name : string } [@@deriving yojson_of]
+
+  type t [@@deriving yojson_of]
+
+  val make :
+    ?region:string ->
+    ?availability_zone:string ->
+    ?instance:id_with_name ->
+    ?machine:string ->
+    ?account:id_with_name ->
+    ?project:id_with_name ->
+    string ->
+    t
+end
+
+module Service : sig
+  type t [@@deriving yojson_of]
+
+  val make :
+    ?version:string ->
+    ?environment:string ->
+    ?agent:Agent.t ->
+    ?framework:Framework.t ->
+    ?language:Language.t ->
+    ?runtime:Runtime.t ->
+    ?node:string ->
+    string ->
+    t
+end
+
+module User : sig
+  type t [@@deriving yojson_of]
+
+  val make : ?username:string -> ?id:string -> ?email:string -> unit -> t
+end
