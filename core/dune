@@ -3,7 +3,7 @@
  (preprocess
   (pps ppx_yojson_conv))
  (public_name elastic-apm.core)
- (libraries mtime ptime yojson))
+ (libraries mtime.clock.os ptime.clock.os yojson))
 
 (rule
  (targets elastic_apm_generated_sysinfo.ml)
