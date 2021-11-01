@@ -1,13 +1,15 @@
 module Platform = struct
   type t = { architecture : string; hostname : string; platform : string }
 
-  let default =
-    lazy
-      (match
-         ( Elastic_apm_generated_sysinfo.architecture,
-           Elastic_apm_generated_sysinfo.platform )
-       with
-      | Some architecture, Some platform ->
-          { architecture; platform; hostname = Unix.gethostname () }
-      | _ -> invalid_arg "Failed to determine host platform's architecture")
+  let detect () =
+    let architecture =
+      Option.value ~default:"Unknown" Elastic_apm_generated_sysinfo.architecture
+    in
+    let platform =
+      Option.value ~default:"Unknown" Elastic_apm_generated_sysinfo.platform
+    in
+    let hostname = Unix.gethostname () in
+    { architecture; hostname; platform }
+
+  let default = Lazy.from_fun detect
 end
