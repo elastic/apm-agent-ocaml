@@ -11,5 +11,5 @@ module Platform = struct
     let hostname = Unix.gethostname () in
     { architecture; hostname; platform }
 
-  let default = lazy (detect ())
+  let default = Lazy.from_fun detect
 end
