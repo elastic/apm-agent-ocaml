@@ -46,6 +46,8 @@ let make_id_module byte_count fill_buffer =
     let to_string t = t
 
     let to_hex t = hex_encode t
+
+    let yojson_of_t t = `String (to_hex t)
   end in
   (module M : Id_intf.S)
 
