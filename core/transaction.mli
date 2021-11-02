@@ -13,12 +13,14 @@ type t = {
   id : Id.Span_id.t;
   span_count : Span_count.t;
   trace_id : Id.Trace_id.t;
+  parent_id : Id.Span_id.t option;
   type_ : string;
   name : string;
 }
 [@@deriving yojson_of]
 
 val make :
+  ?parent_id:Id.Span_id.t ->
   duration:Duration.t ->
   id:Id.Span_id.t ->
   span_count:Span_count.t ->

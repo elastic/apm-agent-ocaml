@@ -13,11 +13,12 @@ type t = {
   id : Id.Span_id.t;
   span_count : Span_count.t;
   trace_id : Id.Trace_id.t;
+  parent_id : Id.Span_id.t option; [@yojson.option]
   type_ : string; [@key "type"]
   name : string;
 }
 [@@deriving yojson_of]
 
-let make ~duration ~id ~span_count ~trace_id ~kind name =
-  { duration; id; span_count; trace_id; type_ = kind; name }
+let make ?parent_id ~duration ~id ~span_count ~trace_id ~kind name =
+  { duration; id; span_count; trace_id; type_ = kind; name; parent_id }
 ;;
