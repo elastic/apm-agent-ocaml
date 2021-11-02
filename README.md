@@ -12,7 +12,7 @@ cd apm-agent-ocaml-on-week-2021
 Setup OCaml environment
 
 ```bash
-opam switch init . 4.13.1
+opam switch create . 4.13.1
 opam install ocamlformat ocamlformat-rpc ocaml-lsp-server
 ```
 
