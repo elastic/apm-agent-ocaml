@@ -84,3 +84,26 @@ module User : sig
 
   val make : ?username:string -> ?id:string -> ?email:string -> unit -> t
 end
+
+type t = {
+  process : Process.t option;
+  system : System.t option;
+  agent : Agent.t option;
+  framework : Framework.t option;
+  language : Language.t option;
+  runtime : Runtime.t option;
+  cloud : Cloud.t option;
+  service : Service.t;
+  user : User.t option;
+}
+[@@deriving yojson_of]
+
+val make :
+  ?process:Process.t ->
+  ?system:System.t ->
+  ?agent:Agent.t ->
+  ?framework:Framework.t ->
+  ?cloud:Cloud.t ->
+  ?user:User.t ->
+  Service.t ->
+  t

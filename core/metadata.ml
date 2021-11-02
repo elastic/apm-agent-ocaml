@@ -2,7 +2,7 @@ module Process = struct
   type t = {
     pid : int;
     title : string;
-    parent_process_id : (int option[@key "ppid"] [@yojson.option]);
+    parent_process_id : int option; [@key "ppid"] [@yojson.option]
     argv : string array;
   }
   [@@deriving yojson_of]
@@ -31,7 +31,7 @@ module System = struct
     architecture : string;
     hostname : string;
     platform : string;
-    container : (Container.t option[@yojson.option]);
+    container : Container.t option; [@yojson.option]
   }
   [@@deriving yojson_of]
 
@@ -46,7 +46,7 @@ module Agent = struct
 end
 
 module Framework = struct
-  type t = { name : string; version : (string option[@yojson.option]) }
+  type t = { name : string; version : string option [@yojson.option] }
   [@@deriving yojson_of]
 
   let make ?version name = { name; version }
@@ -71,12 +71,12 @@ module Cloud = struct
 
   type t = {
     provider : string;
-    region : (string option[@yojson.option]);
-    availability_zone : (string option[@yojson.option]);
-    instance : (id_with_name option[@yojson.option]);
-    machine : (machine option[@yojson.option]);
-    account : (id_with_name option[@yojson.option]);
-    project : (id_with_name option[@yojson.option]);
+    region : string option; [@yojson.option]
+    availability_zone : string option; [@yojson.option]
+    instance : id_with_name option; [@yojson.option]
+    machine : machine option; [@yojson.option]
+    account : id_with_name option; [@yojson.option]
+    project : id_with_name option; [@yojson.option]
   }
   [@@deriving yojson_of]
 
@@ -98,13 +98,13 @@ module Service = struct
 
   type t = {
     name : string;
-    version : (string option[@yojson.option]);
-    environment : (string option[@yojson.option]);
-    agent : (Agent.t option[@yojson.option]);
-    framework : (Framework.t option[@yojson.option]);
-    language : (Language.t option[@yojson.option]);
-    runtime : (Runtime.t option[@yojson.option]);
-    node : (service_node option[@yojson.option]);
+    version : string option; [@yojson.option]
+    environment : string option; [@yojson.option]
+    agent : Agent.t option; [@yojson.option]
+    framework : Framework.t option; [@yojson.option]
+    language : Language.t option; [@yojson.option]
+    runtime : Runtime.t option; [@yojson.option]
+    node : service_node option; [@yojson.option]
   }
   [@@deriving yojson_of]
 
@@ -124,9 +124,9 @@ end
 
 module User = struct
   type t = {
-    username : (string option[@yojson.option]);
-    id : (string option[@yojson.option]);
-    email : (string option[@yojson.option]);
+    username : string option; [@yojson.option]
+    id : string option; [@yojson.option]
+    email : string option; [@yojson.option]
   }
   [@@deriving yojson_of]
 
@@ -137,3 +137,30 @@ module User = struct
 
   let make ?username ?id ?email () = { username; id; email }
 end
+
+type t = {
+  process : Process.t option;
+  system : System.t option;
+  agent : Agent.t option;
+  framework : Framework.t option;
+  language : Language.t option;
+  runtime : Runtime.t option;
+  cloud : Cloud.t option;
+  service : Service.t;
+  user : User.t option;
+}
+[@@deriving yojson_of]
+
+let make ?(process = Lazy.force Process.default) ?system ?agent ?framework
+    ?cloud ?user service =
+  {
+    process = Some process;
+    system;
+    agent;
+    framework;
+    language = Some Language.t;
+    runtime = Some Runtime.t;
+    cloud;
+    service;
+    user;
+  }

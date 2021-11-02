@@ -28,6 +28,7 @@
    (>= 4.08.0))
   mtime
   dune-configurator
+  ppx_expect
   ppx_yojson_conv
   (ptime
    (>= 0.8.5))))

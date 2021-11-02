@@ -9,3 +9,7 @@ type t = {
   timestamp : Timestamp.t;
 }
 [@@deriving yojson_of]
+
+let make ~duration ~id ~name ~transaction_id ~parent_id ~trace_id ~timestamp
+    type_ =
+  { duration; id; name; transaction_id; parent_id; trace_id; type_; timestamp }

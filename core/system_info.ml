@@ -1,5 +1,6 @@
 module Platform = struct
   type t = { architecture : string; hostname : string; platform : string }
+  [@@deriving yojson_of]
 
   let detect () =
     let architecture =
