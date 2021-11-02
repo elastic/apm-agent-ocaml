@@ -14,6 +14,7 @@ type t = {
   span_count : Span_count.t;
   trace_id : Id.Trace_id.t;
   type_ : string;
+  name : string;
 }
 [@@deriving yojson_of]
 
@@ -22,5 +23,6 @@ val make :
   id:Id.Span_id.t ->
   span_count:Span_count.t ->
   trace_id:Id.Trace_id.t ->
+  kind:string ->
   string ->
   t

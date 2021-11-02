@@ -14,9 +14,10 @@ type t = {
   span_count : Span_count.t;
   trace_id : Id.Trace_id.t;
   type_ : string; [@key "type"]
+  name : string;
 }
 [@@deriving yojson_of]
 
-let make ~duration ~id ~span_count ~trace_id type_ =
-  { duration; id; span_count; trace_id; type_ }
+let make ~duration ~id ~span_count ~trace_id ~kind name =
+  { duration; id; span_count; trace_id; type_ = kind; name }
 ;;

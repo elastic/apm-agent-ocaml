@@ -272,7 +272,7 @@ let transaction =
     ~id:(Id.Span_id.create_gen state)
     ~span_count:(Transaction.Span_count.make 12)
     ~trace_id:(Id.Trace_id.create_gen state)
-    "test"
+    ~kind:"request" "test"
 ;;
 
 let%expect_test "transaction" =
@@ -284,7 +284,8 @@ let%expect_test "transaction" =
       "id": "a8d16b0a1559dc02",
       "span_count": { "started": 12 },
       "trace_id": "b77ebdf068cb10014b841a2a47df3011",
-      "type": "test"
+      "type": "request",
+      "name": "test"
     } |}];
   let transaction =
     Transaction.make
@@ -292,7 +293,7 @@ let%expect_test "transaction" =
       ~id:(Id.Span_id.create_gen state)
       ~span_count:(Transaction.Span_count.make ~dropped:5 12)
       ~trace_id:(Id.Trace_id.create_gen state)
-      "test"
+      ~kind:"request" "test"
   in
   print_json (Transaction.yojson_of_t transaction);
   [%expect
@@ -302,7 +303,8 @@ let%expect_test "transaction" =
         "id": "4e3d3c0df5a1f610",
         "span_count": { "dropped": 5, "started": 12 },
         "trace_id": "11d0fb00078f8c303deab2a1651e57fc",
-        "type": "test"
+        "type": "request",
+        "name": "test"
       } |}]
 ;;
 
@@ -331,7 +333,8 @@ let%expect_test "serialize request payloads" =
         "id": "a8d16b0a1559dc02",
         "span_count": { "started": 12 },
         "trace_id": "b77ebdf068cb10014b841a2a47df3011",
-        "type": "test"
+        "type": "request",
+        "name": "test"
       }
     } |}];
   print_json (Request.yojson_of_t (Request.Metadata metadata));
@@ -381,7 +384,8 @@ let%expect_test "serialize request payloads" =
         ()
     in
     print_json (Request.yojson_of_t (Request.Error err));
-  [%expect {|
+    [%expect
+      {|
     {
       "error": {
         "id": "a884f8dd451e53e894be98608fc09892",
@@ -410,7 +414,7 @@ let%expect_test "serialize request payloads" =
             },
             {
               "filename": "test/json_serialization.ml",
-              "lineno": 375,
+              "lineno": 378,
               "function": "Apm_agent_tests__Json_serialization.(fun)",
               "colno": 6
             }
