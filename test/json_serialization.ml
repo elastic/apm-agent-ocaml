@@ -153,11 +153,11 @@ let%expect_test "metadata - user" =
   print_json (Metadata.User.yojson_of_t user);
   [%expect {| null |}]
 
+let metadata =
+  Metadata.make ~process ~system ~agent ~framework ~cloud ~user
+    (Metadata.Service.make "testservice")
+
 let%expect_test "metadata" =
-  let metadata =
-    Metadata.make ~process ~system ~agent ~framework ~cloud ~user
-      (Metadata.Service.make "testservice")
-  in
   print_json (Metadata.yojson_of_t metadata);
   [%expect
     {|
@@ -195,18 +195,18 @@ let%expect_test "metadata" =
       }
     } |}]
 
+let span =
+  Span.make
+    ~duration:(Duration.of_span Mtime.Span.one)
+    ~id:(Id.Span_id.create_gen state)
+    ~name:"testspan"
+    ~transaction_id:(Id.Span_id.create_gen state)
+    ~parent_id:(Id.Span_id.create_gen state)
+    ~trace_id:(Id.Trace_id.create_gen state)
+    ~timestamp:(Timestamp.of_us_since_epoch 123)
+    "test"
+
 let%expect_test "span" =
-  let span =
-    Span.make
-      ~duration:(Duration.of_span Mtime.Span.one)
-      ~id:(Id.Span_id.create_gen state)
-      ~name:"testspan"
-      ~transaction_id:(Id.Span_id.create_gen state)
-      ~parent_id:(Id.Span_id.create_gen state)
-      ~trace_id:(Id.Trace_id.create_gen state)
-      ~timestamp:(Timestamp.of_us_since_epoch 123)
-      "test"
-  in
   print_json (Span.yojson_of_t span);
   [%expect
     {|
@@ -234,15 +234,15 @@ let%expect_test "timestamp" =
   print_json (Timestamp.yojson_of_t timestamp);
   [%expect {| 1234567890 |}]
 
+let transaction =
+  Transaction.make
+    ~duration:(Duration.of_span Mtime.Span.one)
+    ~id:(Id.Span_id.create_gen state)
+    ~span_count:(Transaction.Span_count.make 12)
+    ~trace_id:(Id.Trace_id.create_gen state)
+    "test"
+
 let%expect_test "transaction" =
-  let transaction =
-    Transaction.make
-      ~duration:(Duration.of_span Mtime.Span.one)
-      ~id:(Id.Span_id.create_gen state)
-      ~span_count:(Transaction.Span_count.make 12)
-      ~trace_id:(Id.Trace_id.create_gen state)
-      "test"
-  in
   print_json (Transaction.yojson_of_t transaction);
   [%expect
     {|
@@ -271,3 +271,65 @@ let%expect_test "transaction" =
         "trace_id": "11d0fb00078f8c303deab2a1651e57fc",
         "type": "test"
       } |}]
+
+let%expect_test "request" =
+  let request = Request.make metadata transaction [ span ] in
+  print_endline (Request.serialize request);
+  [%expect
+    {|
+    {
+      "metadata": {
+        "process": {
+          "pid": 2,
+          "title": "process.exe",
+          "ppid": 1,
+          "argv": [ "hello", "world" ]
+        },
+        "system": {
+          "architecture": "256bit",
+          "hostname": "testhost",
+          "platform": "testplatform",
+          "container": { "id": "hiimacontainer" }
+        },
+        "agent": { "name": "secret agent", "version": "vNext" },
+        "framework": { "name": "frame", "version": "beta" },
+        "language": { "name": "OCaml", "version": "4.13.1" },
+        "runtime": { "name": "OCaml", "version": "4.13.1" },
+        "cloud": {
+          "provider": "name",
+          "region": "reg",
+          "availability_zone": "az",
+          "instance": { "id": "012", "name": "abc" },
+          "machine": { "type": "fast" },
+          "account": { "id": "012", "name": "abc" },
+          "project": { "id": "012", "name": "abc" }
+        },
+        "service": { "name": "testservice" },
+        "user": {
+          "username": "admin",
+          "id": "000",
+          "email": "example@example.com"
+        }
+      }
+    }
+    {
+      "transaction": {
+        "duration": 1e-06,
+        "id": "a8d16b0a1559dc02",
+        "span_count": { "started": 12 },
+        "trace_id": "b77ebdf068cb10014b841a2a47df3011",
+        "type": "test"
+      }
+    }
+    {
+      "span": {
+        "duration": 1e-06,
+        "id": "e5bef682a829d9c1",
+        "name": "testspan",
+        "transaction_id": "b03d453ece40e404",
+        "parent_id": "1769c499c60d46a0",
+        "trace_id": "20ba51f22b32eb39321acd340ce87f80",
+        "type": "test",
+        "timestamp": 123
+      }
+    } |}]
