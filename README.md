@@ -1,5 +1,11 @@
 # OCaml agent for Elastic APM
 
+<p align="center">
+  <img
+    alt="Test and Build OCaml APM Client"
+    src="https://github.com/elastic/apm-agent-ocaml-on-week-2021/actions/workflows/build-client.yml/badge.svg" />
+</p>
+
 ## Dev setup
 
 Clone

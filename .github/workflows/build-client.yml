@@ -16,7 +16,7 @@ jobs:
         os:
           - macos-latest
         ocaml-version:
-          - 4.12.0
+          - 4.13.1
 
     runs-on: ${{ matrix.os }}
 
@@ -24,9 +24,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Use OCaml ${{ matrix.ocaml-version }}
-        uses: avsm/setup-ocaml@v1
+      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+        uses: ocaml/setup-ocaml@v2
         with:
-          ocaml-version: ${{ matrix.ocaml-version }}
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
       - run: echo "⚡️ Ride the Camel"
+
+      - run: opam install ./elastic-apm.opam --deps-only -y
+
+      - run: eval $(opam env) && dune build @runtest && dune build
+
+      - run: shasum -a 256 _build/default/META.elastic-apm
