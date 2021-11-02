@@ -16,7 +16,7 @@ jobs:
         os:
           - macos-latest
         ocaml-version:
-          - 4.12.0
+          - 4.13.1
 
     runs-on: ${{ matrix.os }}
 
@@ -24,9 +24,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Use OCaml ${{ matrix.ocaml-version }}
-        uses: avsm/setup-ocaml@v1
+      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+        uses: ocaml/setup-ocaml@v2
         with:
-          ocaml-version: ${{ matrix.ocaml-version }}
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
       - run: echo "⚡️ Ride the Camel"
+
+      - run: opam switch init . 4.13.1
+
+      - run: dune build
