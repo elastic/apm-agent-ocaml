@@ -31,6 +31,8 @@ jobs:
 
       - run: echo "⚡️ Ride the Camel"
 
-      - run: opam switch init . 4.13.1
+      - run: opam install ./elastic-apm.opam --deps-only -y
 
       - run: dune build
+
+      - run: shasum -a 256 _build/default/META.elastic-apm
