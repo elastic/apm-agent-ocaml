@@ -53,7 +53,7 @@ module Exception = struct
 end
 
 type t = {
-  id : string;
+  id : Id.Error_id.t;
   timestamp : Timestamp.t;
   trace_id : Id.Trace_id.t option; [@yojson.option]
   transaction_id : Id.Span_id.t option; [@yojson.option]
@@ -62,7 +62,20 @@ type t = {
 }
 [@@deriving yojson_of]
 
-let make ?trace_id ?transaction_id ?parent_id ~exn ~backtrace ~timestamp id =
+let make
+    ?random_state
+    ?trace_id
+    ?transaction_id
+    ?parent_id
+    ~exn
+    ~backtrace
+    ~timestamp
+    () =
+  let id =
+    match random_state with
+    | None -> Id.Error_id.create ()
+    | Some state -> Id.Error_id.create_gen state
+  in
   {
     id;
     timestamp;
