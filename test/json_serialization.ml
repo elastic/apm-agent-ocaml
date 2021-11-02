@@ -58,8 +58,11 @@ let%expect_test "metadata - container" =
 ;;
 
 let system =
-  Metadata.System.make ~container ~platform:"testplatform" ~hostname:"testhost"
-    ~architecture:"256bit" ()
+  let system_info =
+    System_info.Platform.make ~platform:"testplatform" ~hostname:"testhost"
+      ~architecture:"256bit"
+  in
+  Metadata.System.make ~container ~system_info ()
 ;;
 
 let%expect_test "metadata - system" =
@@ -72,10 +75,11 @@ let%expect_test "metadata - system" =
       "platform": "testplatform",
       "container": { "id": "hiimacontainer" }
     } |}];
-  let system =
-    Metadata.System.make ~platform:"testplatform" ~hostname:"testhost"
-      ~architecture:"256bit" ()
+  let system_info =
+    System_info.Platform.make ~platform:"testplatform" ~hostname:"testhost"
+      ~architecture:"256bit"
   in
+  let system = Metadata.System.make ~system_info () in
   print_json (Metadata.System.yojson_of_t system);
   [%expect
     {|
@@ -414,7 +418,7 @@ let%expect_test "serialize request payloads" =
             },
             {
               "filename": "test/json_serialization.ml",
-              "lineno": 378,
+              "lineno": 382,
               "function": "Apm_agent_tests__Json_serialization.(fun)",
               "colno": 6
             }

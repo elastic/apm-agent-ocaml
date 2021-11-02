@@ -41,8 +41,16 @@ module System = struct
   }
   [@@deriving yojson_of]
 
-  let make ?container ~platform ~hostname ~architecture () =
-    { architecture; hostname; platform; container }
+  let make
+      ?container
+      ?(system_info = Lazy.force System_info.Platform.default)
+      () =
+    {
+      architecture = system_info.architecture;
+      hostname = system_info.hostname;
+      platform = system_info.platform;
+      container;
+    }
   ;;
 end
 
