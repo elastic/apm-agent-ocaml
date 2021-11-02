@@ -16,12 +16,7 @@ module System : sig
   type t [@@deriving yojson_of]
 
   val make :
-    ?container:Container.t ->
-    platform:string ->
-    hostname:string ->
-    architecture:string ->
-    unit ->
-    t
+    ?container:Container.t -> ?system_info:System_info.Platform.t -> unit -> t
 end
 
 module Agent : sig

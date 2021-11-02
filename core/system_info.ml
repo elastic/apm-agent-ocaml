@@ -18,4 +18,8 @@ module Platform = struct
   ;;
 
   let default = Lazy.from_fun detect
+
+  let make ~architecture ~hostname ~platform =
+    { architecture; hostname; platform }
+  ;;
 end
