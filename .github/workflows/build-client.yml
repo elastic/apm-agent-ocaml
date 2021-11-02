@@ -33,6 +33,8 @@ jobs:
 
       - run: opam install ./elastic-apm.opam --deps-only -y
 
+      - run: eval $(opam env)
+
       - run: dune build
 
       - run: shasum -a 256 _build/default/META.elastic-apm
