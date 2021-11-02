@@ -25,7 +25,7 @@
  (synopsis "Elastic Application Performance Monitoring (APM) client library")
  (depends
   (ocaml
-   (>= 4.08.0))
+   (>= 4.12.0))
   mtime
   dune-configurator
   ppx_expect

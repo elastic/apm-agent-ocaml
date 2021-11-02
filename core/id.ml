@@ -60,3 +60,5 @@ let make_id_module byte_count fill_buffer =
 module Span_id = (val make_id_module 8 fill_64_bits)
 
 module Trace_id = (val make_id_module 16 fill_128_bits)
+
+module Error_id = (val make_id_module 16 fill_128_bits)

@@ -1,5 +1,13 @@
 open Elastic_apm_core
 
+exception Dummy_exn of string
+
+let boom () = raise (Dummy_exn "Hello")
+
+let foo () = boom ()
+
+let test_error () = foo ()
+
 let state = Random.State.make [| 1; 2; 3; 4; 5 |]
 
 let print_json json =
@@ -298,9 +306,35 @@ let%expect_test "transaction" =
       } |}]
 ;;
 
-let%expect_test "request" =
-  let request = Request.make metadata transaction [ span ] in
-  print_endline (Request.serialize request);
+let%expect_test "serialize request payloads" =
+  print_json (Request.yojson_of_t (Request.Span span));
+  [%expect
+    {|
+    {
+      "span": {
+        "duration": 1e-06,
+        "id": "e5bef682a829d9c1",
+        "name": "testspan",
+        "transaction_id": "b03d453ece40e404",
+        "parent_id": "1769c499c60d46a0",
+        "trace_id": "20ba51f22b32eb39321acd340ce87f80",
+        "type": "test",
+        "timestamp": 123
+      }
+    } |}];
+  print_json (Request.yojson_of_t (Request.Transaction transaction));
+  [%expect
+    {|
+    {
+      "transaction": {
+        "duration": 1e-06,
+        "id": "a8d16b0a1559dc02",
+        "span_count": { "started": 12 },
+        "trace_id": "b77ebdf068cb10014b841a2a47df3011",
+        "type": "test"
+      }
+    } |}];
+  print_json (Request.yojson_of_t (Request.Metadata metadata));
   [%expect
     {|
     {
@@ -337,26 +371,51 @@ let%expect_test "request" =
           "email": "example@example.com"
         }
       }
-    }
+    } |}];
+  try test_error () with
+  | exn ->
+    let backtrace = Printexc.get_raw_backtrace () in
+    let err =
+      Error.make ~random_state:state ~backtrace ~exn
+        ~timestamp:(Timestamp.of_us_since_epoch 123)
+        ()
+    in
+    print_json (Request.yojson_of_t (Request.Error err));
+  [%expect {|
     {
-      "transaction": {
-        "duration": 1e-06,
-        "id": "a8d16b0a1559dc02",
-        "span_count": { "started": 12 },
-        "trace_id": "b77ebdf068cb10014b841a2a47df3011",
-        "type": "test"
-      }
-    }
-    {
-      "span": {
-        "duration": 1e-06,
-        "id": "e5bef682a829d9c1",
-        "name": "testspan",
-        "transaction_id": "b03d453ece40e404",
-        "parent_id": "1769c499c60d46a0",
-        "trace_id": "20ba51f22b32eb39321acd340ce87f80",
-        "type": "test",
-        "timestamp": 123
+      "error": {
+        "id": "a884f8dd451e53e894be98608fc09892",
+        "timestamp": 123,
+        "exception": {
+          "message": "Apm_agent_tests.Json_serialization.Dummy_exn(\"Hello\")",
+          "type": "exn",
+          "stacktrace": [
+            {
+              "filename": "test/json_serialization.ml",
+              "lineno": 5,
+              "function": "Apm_agent_tests__Json_serialization.boom",
+              "colno": 14
+            },
+            {
+              "filename": "test/json_serialization.ml",
+              "lineno": 7,
+              "function": "Apm_agent_tests__Json_serialization.foo",
+              "colno": 13
+            },
+            {
+              "filename": "test/json_serialization.ml",
+              "lineno": 9,
+              "function": "Apm_agent_tests__Json_serialization.test_error",
+              "colno": 20
+            },
+            {
+              "filename": "test/json_serialization.ml",
+              "lineno": 375,
+              "function": "Apm_agent_tests__Json_serialization.(fun)",
+              "colno": 6
+            }
+          ]
+        }
       }
     } |}]
 ;;
