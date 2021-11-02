@@ -1,9 +1,6 @@
-type t = {
-  metadata : Metadata.t;
-  transaction : Transaction.t;
-  spans : Span.t list;
-}
-
-val make : Metadata.t -> Transaction.t -> Span.t list -> t
-
-val serialize : t -> string
+type t =
+  | Metadata of Metadata.t
+  | Transaction of Transaction.t
+  | Span of Span.t
+  | Error of Error.t
+[@@deriving yojson_of]
