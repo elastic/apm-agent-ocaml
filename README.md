@@ -29,8 +29,16 @@ rebuilt. In a terminal, in or outside of your editor:
 dune build -w
 ```
 
-If you don't have it already, watch mode needs `fswatch` which can be installed
-via `brew`:
+Tests can also be run in watch mode with expectation tests automatically
+capturing changes in output! This gives an almost magical experience where test
+results update as new tests are written _and_ as the library itself evolves.
+
+```bash
+dune build @runtest -w --auto-promote
+```
+
+If you don't have it installed already, watch mode needs `fswatch` which can be
+installed via `brew`:
 
 ```bash
 brew install fswatch
