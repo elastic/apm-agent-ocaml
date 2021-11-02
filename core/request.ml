@@ -24,7 +24,9 @@ let serialize request =
   List.iter
     (fun span ->
       Format.pp_print_newline ppf ();
-      Format.fprintf ppf "%a" pp_json (span_json span))
+      Format.fprintf ppf "%a" pp_json (span_json span)
+    )
     request.spans;
   Format.pp_print_flush ppf ();
   Buffer.contents buf
+;;

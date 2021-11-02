@@ -49,7 +49,11 @@ module Runtime : sig
 end
 
 module Cloud : sig
-  type id_with_name = { id : string; name : string } [@@deriving yojson_of]
+  type id_with_name = {
+    id : string;
+    name : string;
+  }
+  [@@deriving yojson_of]
 
   type t [@@deriving yojson_of]
 

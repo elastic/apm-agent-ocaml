@@ -1,5 +1,9 @@
 module Platform = struct
-  type t = { architecture : string; hostname : string; platform : string }
+  type t = {
+    architecture : string;
+    hostname : string;
+    platform : string;
+  }
   [@@deriving yojson_of]
 
   let detect () =
@@ -11,6 +15,7 @@ module Platform = struct
     in
     let hostname = Unix.gethostname () in
     { architecture; hostname; platform }
+  ;;
 
   let default = Lazy.from_fun detect
 end

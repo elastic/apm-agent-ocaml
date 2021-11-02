@@ -1,5 +1,9 @@
 module Span_count : sig
-  type t = { dropped : int option; started : int } [@@deriving yojson_of]
+  type t = {
+    dropped : int option;
+    started : int;
+  }
+  [@@deriving yojson_of]
 
   val make : ?dropped:int -> int -> t
 end

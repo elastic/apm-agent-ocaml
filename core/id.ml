@@ -9,10 +9,12 @@ let hex_encode s =
       let ch = Char.code (String.unsafe_get s s_idx) in
       Bytes.unsafe_set b b_idx (String.unsafe_get alphabet ((ch lsr 4) land 15));
       Bytes.unsafe_set b (b_idx + 1) (String.unsafe_get alphabet (ch land 15));
-      loop (b_idx + 2) (s_idx + 1))
+      loop (b_idx + 2) (s_idx + 1)
+    )
   in
   loop 0 0;
   Bytes.unsafe_to_string b
+;;
 
 let fill_64_bits state buf ~pos =
   assert (Bytes.length buf - pos >= 8);
@@ -27,10 +29,12 @@ let fill_64_bits state buf ~pos =
   Bytes.unsafe_set buf (pos + 5) (Char.chr ((b lsr 16) land 0xFF));
   Bytes.unsafe_set buf (pos + 6) (Char.chr (c land 0xFF));
   Bytes.unsafe_set buf (pos + 7) (Char.chr ((c lsr 8) land 0xFF))
+;;
 
 let fill_128_bits state buf ~pos =
   fill_64_bits state buf ~pos;
   fill_64_bits state buf ~pos:(pos + 8)
+;;
 
 let make_id_module byte_count fill_buffer =
   let module M = struct
@@ -40,6 +44,7 @@ let make_id_module byte_count fill_buffer =
       let b = Bytes.create byte_count in
       fill_buffer state b ~pos:0;
       Bytes.unsafe_to_string b
+    ;;
 
     let create () = create_gen default_rand
 
@@ -50,6 +55,7 @@ let make_id_module byte_count fill_buffer =
     let yojson_of_t t = `String (to_hex t)
   end in
   (module M : Id_intf.S)
+;;
 
 module Span_id = (val make_id_module 8 fill_64_bits)
 

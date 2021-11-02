@@ -9,15 +9,21 @@ module Process = struct
 
   let make ?parent_process_id ?(argv = [||]) pid title =
     { pid; title; parent_process_id; argv }
+  ;;
 
   let default =
     lazy
       (let pid = Unix.getpid () in
        let parent_process_id =
-         if Sys.win32 then None else Some (Unix.getppid ())
+         if Sys.win32 then
+           None
+         else
+           Some (Unix.getppid ())
        in
        let argv = Sys.argv in
-       make ?parent_process_id ~argv pid Sys.executable_name)
+       make ?parent_process_id ~argv pid Sys.executable_name
+      )
+  ;;
 end
 
 module Container = struct
@@ -37,35 +43,55 @@ module System = struct
 
   let make ?container ~platform ~hostname ~architecture () =
     { architecture; hostname; platform; container }
+  ;;
 end
 
 module Agent = struct
-  type t = { name : string; version : string } [@@deriving yojson_of]
+  type t = {
+    name : string;
+    version : string;
+  }
+  [@@deriving yojson_of]
 
   let make ~name ~version = { name; version }
 end
 
 module Framework = struct
-  type t = { name : string; version : string option [@yojson.option] }
+  type t = {
+    name : string;
+    version : string option; [@yojson.option]
+  }
   [@@deriving yojson_of]
 
   let make ?version name = { name; version }
 end
 
 module Language = struct
-  type t = { name : string; version : string } [@@deriving yojson_of]
+  type t = {
+    name : string;
+    version : string;
+  }
+  [@@deriving yojson_of]
 
   let t = { name = "OCaml"; version = Sys.ocaml_version }
 end
 
 module Runtime = struct
-  type t = { name : string; version : string } [@@deriving yojson_of]
+  type t = {
+    name : string;
+    version : string;
+  }
+  [@@deriving yojson_of]
 
   let t = { name = "OCaml"; version = Sys.ocaml_version }
 end
 
 module Cloud = struct
-  type id_with_name = { id : string; name : string } [@@deriving yojson_of]
+  type id_with_name = {
+    id : string;
+    name : string;
+  }
+  [@@deriving yojson_of]
 
   type machine = { type_ : string [@key "type"] } [@@deriving yojson_of]
 
@@ -80,7 +106,13 @@ module Cloud = struct
   }
   [@@deriving yojson_of]
 
-  let make ?region ?availability_zone ?instance ?machine ?account ?project
+  let make
+      ?region
+      ?availability_zone
+      ?instance
+      ?machine
+      ?account
+      ?project
       provider =
     {
       provider;
@@ -91,6 +123,7 @@ module Cloud = struct
       account;
       project;
     }
+  ;;
 end
 
 module Service = struct
@@ -120,6 +153,7 @@ module Service = struct
       runtime;
       node = Option.map (fun configured_name -> { configured_name }) node;
     }
+  ;;
 end
 
 module User = struct
@@ -131,9 +165,17 @@ module User = struct
   [@@deriving yojson_of]
 
   let is_none { username; id; email } =
-    match (username, id, email) with None, None, None -> true | _ -> false
+    match (username, id, email) with
+    | (None, None, None) -> true
+    | _ -> false
+  ;;
 
-  let yojson_of_t t = if is_none t then `Null else yojson_of_t t
+  let yojson_of_t t =
+    if is_none t then
+      `Null
+    else
+      yojson_of_t t
+  ;;
 
   let make ?username ?id ?email () = { username; id; email }
 end
@@ -151,8 +193,14 @@ type t = {
 }
 [@@deriving yojson_of]
 
-let make ?(process = Lazy.force Process.default) ?system ?agent ?framework
-    ?cloud ?user service =
+let make
+    ?(process = Lazy.force Process.default)
+    ?system
+    ?agent
+    ?framework
+    ?cloud
+    ?user
+    service =
   {
     process = Some process;
     system;
@@ -164,3 +212,4 @@ let make ?(process = Lazy.force Process.default) ?system ?agent ?framework
     service;
     user;
   }
+;;
