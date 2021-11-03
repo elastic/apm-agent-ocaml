@@ -13,11 +13,20 @@ type t = {
 let make
     ~duration
     ~id
-    ~name
+    ~kind
     ~transaction_id
     ~parent_id
     ~trace_id
     ~timestamp
-    type_ =
-  { duration; id; name; transaction_id; parent_id; trace_id; type_; timestamp }
+    name =
+  {
+    duration;
+    id;
+    name;
+    transaction_id;
+    parent_id;
+    trace_id;
+    type_ = kind;
+    timestamp;
+  }
 ;;

@@ -231,12 +231,12 @@ let span =
   Span.make
     ~duration:(Duration.of_span Mtime.Span.one)
     ~id:(Id.Span_id.create_gen state)
-    ~name:"testspan"
+    ~kind:"test"
     ~transaction_id:(Id.Span_id.create_gen state)
     ~parent_id:(Id.Span_id.create_gen state)
     ~trace_id:(Id.Trace_id.create_gen state)
     ~timestamp:(Timestamp.of_us_since_epoch 123)
-    "test"
+    "testspan"
 ;;
 
 let%expect_test "span" =

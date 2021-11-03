@@ -13,7 +13,7 @@ type t = {
 val make :
   duration:Duration.t ->
   id:Id.Span_id.t ->
-  name:string ->
+  kind:string ->
   transaction_id:Id.Span_id.t ->
   parent_id:Id.Span_id.t ->
   trace_id:Id.Trace_id.t ->

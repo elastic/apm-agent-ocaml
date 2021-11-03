@@ -63,7 +63,7 @@ let () =
       ~duration:(Duration.of_span @@ Mtime.Span.of_uint64_ns 40000000L)
       ~transaction_id:transaction.id ~parent_id:transaction.id
       ~timestamp:(Timestamp.now ()) ~id:(Id.Span_id.create ()) ~trace_id
-      ~name:"Test7" "db"
+      ~kind:"db" "Test7"
   in
   let transaction2 =
     Transaction.make
