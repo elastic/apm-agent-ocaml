@@ -1,0 +1,3 @@
+(executable
+ (name main)
+ (libraries elastic-apm.core elastic-apm-lwt-reporter logs.fmt fmt.tty))

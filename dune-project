@@ -29,6 +29,10 @@
   base
   dream
   opium
+  logs
+  fmt
+  lwt_ppx
+  cohttp-lwt-unix
   (lwt
    (>= 5.3.0))
   mtime
@@ -37,3 +41,13 @@
   ppx_yojson_conv
   (ptime
    (>= 0.8.5))))
+
+(package
+ (name elastic-apm-lwt-reporter)
+ (depends
+  (ocaml
+   (>= 4.12.0))
+  lwt
+  cohttp-lwt-unix
+  (elastic-apm
+   (= :version))))

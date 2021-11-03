@@ -1,0 +1,4 @@
+(library
+ (name elastic_apm_lwt_reporter)
+ (public_name elastic-apm-lwt-reporter)
+ (libraries elastic-apm.core lwt.unix cohttp-lwt-unix logs))
