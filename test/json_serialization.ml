@@ -427,3 +427,56 @@ let%expect_test "serialize request payloads" =
       }
     } |}]
 ;;
+
+let%expect_test "metricsets" =
+  let timestamp = Timestamp.of_us_since_epoch 123 in
+  let samples =
+    [ ("sample1", Metrics.Metric.Counter { value = 351.; unit_ = Some "ms" }) ]
+  in
+  let metrics = Metrics.create ~timestamp ~samples () in
+  print_json (Request.yojson_of_t (Metrics metrics));
+  [%expect
+    {|
+    {
+      "metricset": {
+        "timestamp": 123,
+        "labels": {},
+        "samples": {
+          "sample1": { "type": "counter", "unit": "ms", "value": 351.0 }
+        }
+      }
+    } |}];
+  let samples =
+    [
+      ("sample1", Metrics.Metric.Counter { value = 351.; unit_ = Some "ms" });
+      ( "sample2",
+        Metrics.Metric.Histogram
+          { values = [ 0.1; 0.5; 0.8 ]; counts = [ 456L; 789L; 1241L ] }
+      );
+    ]
+  in
+  let metrics =
+    Metrics.create
+      ~metric_span:(Metrics.Metric_span.make ~type_:"db" ~subtype:"insert")
+      ~labels:[ ("foo", "bar"); ("hello", "world") ]
+      ~timestamp ~samples ()
+  in
+  print_json (Request.yojson_of_t (Metrics metrics));
+  [%expect
+    {|
+    {
+      "metricset": {
+        "timestamp": 123,
+        "labels": { "foo": "bar", "hello": "world" },
+        "samples": {
+          "sample1": { "type": "counter", "unit": "ms", "value": 351.0 },
+          "sample2": {
+            "type": "histogram",
+            "values": [ 0.1, 0.5, 0.8 ],
+            "counts": [ 456, 789, 1241 ]
+          }
+        },
+        "span": { "type": "db", "subtype": "insert" }
+      }
+    } |}]
+;;

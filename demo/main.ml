@@ -45,6 +45,7 @@ let fail span b =
 let () =
   Fmt_tty.setup_std_outputs ();
   Logs.set_reporter (Logs_fmt.reporter ());
+  Logs.set_level ~all:true (Some Info);
   let reporter =
     Elastic_apm_lwt_reporter.Reporter.create ~apm_server:server_url
       ~server_token:secret_token (metadata ())
@@ -72,6 +73,23 @@ let () =
       ~span_count:(Transaction.Span_count.make 0)
       ~trace_id ~kind:"db" "Test13"
   in
+  let samples =
+    [
+      ( "alpha.sample.upload",
+        Metrics.Metric.Guage { value = 351.; unit_ = Some "ms" }
+      );
+      ( "alpha.foo.histo",
+        Metrics.Metric.Histogram
+          { values = [ 0.1; 0.5; 0.8 ]; counts = [ 456L; 789L; 1241L ] }
+      );
+    ]
+  in
+  let metrics =
+    Metrics.create
+      ~metric_span:(Metrics.Metric_span.make ~type_:"db" ~subtype:"insert")
+      ~labels:[ ("foo", "bar"); ("hello", "world") ]
+      ~samples ()
+  in
   let events =
     match fail span true with
     | None ->
@@ -79,6 +97,7 @@ let () =
         Elastic_apm_core.Request.Transaction transaction;
         Span span;
         Transaction transaction2;
+        Elastic_apm_core.Request.Metrics metrics;
       ]
     | Some e ->
       [
@@ -86,6 +105,7 @@ let () =
         Span span;
         Transaction transaction2;
         Elastic_apm_core.Request.Error e;
+        Metrics metrics;
       ]
   in
   Logs.info (fun m -> m "push events");

@@ -16,10 +16,11 @@ let push t (request : Elastic_apm_core.Request.t) =
     t.metadata_logged <- true
   );
   match request with
-  | (Metadata _ | Span _ | Transaction _) as req ->
+  | (Metadata _ | Span _ | Transaction _ | Metrics _) as req ->
     Log.info (fun m -> m "%a" pp_request req)
   | Error _ as req -> Log.err (fun m -> m "%a" pp_request req)
 ;;
 
 let create ?(src = Logs.Src.create "elastic-apm.logs-reporter") metadata =
-  { metadata_logged = false; log = Logs.src_log src; metadata };;
+  { metadata_logged = false; log = Logs.src_log src; metadata }
+;;
