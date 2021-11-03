@@ -15,19 +15,8 @@ let make_headers t =
   Cohttp.Header.add_authorization (Cohttp.Header.of_list headers) auth
 ;;
 
-let make_body events =
-  let open Elastic_apm_core in
-  let agent =
-    Elastic_apm_core.Metadata.Agent.make ~name:"elastic-apm" ~version:"0.1.0"
-  in
-  let service =
-    Elastic_apm_core.Metadata.Service.make ~language:Metadata.Language.t
-      ~runtime:Metadata.Runtime.t ~agent "demo-apm-service"
-  in
-  let metadata =
-    Elastic_apm_core.Metadata.make ~system:(Metadata.System.make ()) service
-  in
-  let events = Elastic_apm_core.Request.Metadata metadata :: events in
+let make_body t events =
+  let events = Elastic_apm_core.Request.Metadata t.metadata :: events in
   let jsons =
     List.map
       (fun e -> Yojson.Safe.to_string (Elastic_apm_core.Request.yojson_of_t e))
@@ -39,7 +28,7 @@ let make_body events =
 let send_events t headers events =
   Logs.info (fun m -> m "Sending events");
   let uri = Uri.with_path t.apm_server "/intake/v2/events" in
-  let body = Cohttp_lwt.Body.of_string (make_body events) in
+  let body = Cohttp_lwt.Body.of_string (make_body t events) in
   Cohttp_lwt_unix.Client.post ~headers ~body uri >>= fun (resp, body) ->
   Logs.info (fun m -> m "Response: %a" Cohttp.Response.pp_hum resp);
   Cohttp_lwt.Body.to_string body >|= fun body ->
