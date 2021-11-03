@@ -6,20 +6,19 @@ type message_object = {
 } [@@deriving yojson]
 
 let reverse_handler req =
-  let length = Body.length req.Request.body in
-  let body = Body.to_stream req.Request.body in
+  let%lwt body = Body.to_string req.Request.body in
   let message_object =
     body
     |> Yojson.Safe.from_string
     |> message_object_of_yojson
   in
-
+ 
   let rev_body = 
     `String message_object.message
     |> Yojson.Safe.to_string
     |> String.rev
   in
-  Response.make ~body:(Body.of_stream ?length rev_body) () |> Lwt.return
+  Response.make ~body:(Body.of_string rev_body) () |> Lwt.return
 ;;
 
 let _ = 
