@@ -51,3 +51,24 @@
   cohttp-lwt-unix
   (elastic-apm
    (= :version))))
+
+(package
+ (name elastic-apm-lwt-client)
+ (depends
+  (ocaml
+   (>= 4.12.0))
+  lwt
+  cohttp-lwt-unix
+  (elastic-apm
+   (= :version))
+  (elastic-apm-lwt-reporter
+   (= :version))))
+
+(package
+ (name elastic-apm-logs-reporter)
+ (depends
+  (ocaml
+   (>= 4.12.0))
+  logs
+  (elastic-apm
+   (= :version))))

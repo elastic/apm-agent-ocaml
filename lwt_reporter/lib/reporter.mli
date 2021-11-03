@@ -1,6 +1,4 @@
-type t
-
-val push : t -> Elastic_apm_core.Request.t -> unit
+include Elastic_apm_core.Reporter_intf.S
 
 val create :
   ?max_messages_per_batch:int ->
