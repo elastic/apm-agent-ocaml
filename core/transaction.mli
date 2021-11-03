@@ -6,6 +6,10 @@ module Span_count : sig
   [@@deriving yojson_of]
 
   val make : ?dropped:int -> int -> t
+
+  val add_started : t -> int -> t
+
+  val add_dropped : t -> int -> t
 end
 
 type t = {

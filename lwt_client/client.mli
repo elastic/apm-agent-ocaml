@@ -1,0 +1,1 @@
+include Elastic_apm_core.Client_intf.S

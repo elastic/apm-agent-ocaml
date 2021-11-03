@@ -6,6 +6,16 @@ module Span_count = struct
   [@@deriving yojson_of]
 
   let make ?dropped started = { dropped; started }
+
+  let add_started t more = { t with started = t.started + more }
+
+  let add_dropped t more =
+    match more with
+    | 0 -> t
+    | _ ->
+      let current = Option.value t.dropped ~default:0 in
+      { t with dropped = Some (current + more) }
+  ;;
 end
 
 type t = {
