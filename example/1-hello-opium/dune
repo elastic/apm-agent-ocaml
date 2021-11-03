@@ -1,0 +1,4 @@
+(executable
+ (name hello)
+ (libraries base opium)
+ (preprocess (pps lwt_ppx ppx_yojson_conv)))

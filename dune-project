@@ -26,6 +26,11 @@
  (depends
   (ocaml
    (>= 4.12.0))
+  base
+  dream
+  opium
+  (lwt
+   (>= 5.3.0))
   mtime
   dune-configurator
   ppx_expect
