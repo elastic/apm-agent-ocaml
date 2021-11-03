@@ -189,15 +189,15 @@ module User = struct
 end
 
 type t = {
-  process : Process.t option;
-  system : System.t option;
-  agent : Agent.t option;
-  framework : Framework.t option;
-  language : Language.t option;
-  runtime : Runtime.t option;
-  cloud : Cloud.t option;
+  process : Process.t option; [@yojson.option]
+  system : System.t option; [@yojson.option]
+  agent : Agent.t option; [@yojson.option]
+  framework : Framework.t option; [@yojson.option]
+  language : Language.t option; [@yojson.option]
+  runtime : Runtime.t option; [@yojson.option]
+  cloud : Cloud.t option; [@yojson.option]
   service : Service.t;
-  user : User.t option;
+  user : User.t option; [@yojson.option]
 }
 [@@deriving yojson_of]
 

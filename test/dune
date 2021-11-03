@@ -3,4 +3,9 @@
  (inline_tests)
  (preprocess
   (pps ppx_expect ppx_yojson_conv))
- (libraries elastic-apm.core yojson))
+ (libraries
+  elastic-apm.core
+  elastic-apm-logs-reporter
+  fmt.tty
+  logs.fmt
+  yojson))
