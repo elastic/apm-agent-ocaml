@@ -15,11 +15,18 @@ let reverse_handler req =
   Response.make ~body:(Body.of_string rev_body) () |> Lwt.return
 ;;
 
-let () =
+let init () =
+  Fmt_tty.setup_std_outputs ();
+  Logs.set_level (Some Debug);
+  Logs.set_reporter (Logs_fmt.reporter ());
   let service =
     Elastic_apm_core.Metadata.Service.make "opium-elastic-apm-demo"
   in
-  Elastic_apm_opium_middleware.Apm.Init.setup_reporter service;
+  Elastic_apm_opium_middleware.Apm.Init.setup_reporter service
+;;
+
+let () =
+  init ();
   App.empty
   |> App.middleware Elastic_apm_opium_middleware.Apm.m
   |> App.post "/reverse" reverse_handler

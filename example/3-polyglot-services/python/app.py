@@ -1,6 +1,8 @@
 from flask import Flask, request
+from elasticapm.contrib.flask import ElasticAPM
 
 app = Flask(__name__)
+apm = ElasticAPM(app)
 
 @app.route("/", methods=["GET"])
 def index():
