@@ -9,7 +9,12 @@ let state = Random.State.make [| 1; 2; 3; 4; 5 |]
 
 let service = Elastic_apm_core.Metadata.Service.make "testservice"
 let process = Elastic_apm_core.Metadata.Process.make 1 "testprocess"
-let metadata = Elastic_apm_core.Metadata.make ~process service
+let system_info =
+  Elastic_apm_core.System_info.Platform.make ~architecture:"testarch"
+    ~hostname:"testhost" ~platform:"testplatform"
+;;
+let system = Elastic_apm_core.Metadata.System.make ~system_info ()
+let metadata = Elastic_apm_core.Metadata.make ~system ~process service
 
 let trace_id = Elastic_apm_core.Id.Trace_id.create_gen state
 let transaction =
@@ -26,7 +31,7 @@ let%expect_test "logs reporter - default logs src" =
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
   [%expect
     {|
-    inline_test_runner_apm_agent_tests.exe: [INFO] {"metadata":{"process":{"pid":1,"title":"testprocess","argv":[]},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"},"service":{"name":"testservice"}}}
+    inline_test_runner_apm_agent_tests.exe: [INFO] {"metadata":{"process":{"pid":1,"title":"testprocess","argv":[]},"system":{"architecture":"testarch","hostname":"testhost","platform":"testplatform"},"agent":{"name":"OCaml","version":"n/a"},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"},"service":{"name":"testservice","agent":{"name":"OCaml","version":"n/a"},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"}}}}
     inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction"}}|}];
   (* No metadata on following log output *)
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
@@ -42,7 +47,7 @@ let%expect_test "logs reporter - custom logs src" =
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
   [%expect
     {|
-    inline_test_runner_apm_agent_tests.exe: [INFO] {"metadata":{"process":{"pid":1,"title":"testprocess","argv":[]},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"},"service":{"name":"testservice"}}}
+    inline_test_runner_apm_agent_tests.exe: [INFO] {"metadata":{"process":{"pid":1,"title":"testprocess","argv":[]},"system":{"architecture":"testarch","hostname":"testhost","platform":"testplatform"},"agent":{"name":"OCaml","version":"n/a"},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"},"service":{"name":"testservice","agent":{"name":"OCaml","version":"n/a"},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"}}}}
     inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction"}} |}];
   (* No metadata on following log output *)
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);

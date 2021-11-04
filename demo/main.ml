@@ -12,15 +12,8 @@ let secret_token = Sys.getenv "DEV_ELASTIC_TOKEN"
 let server_url = Uri.of_string (Sys.getenv "ELASTIC_ENDPOINT")
 
 let metadata () =
-  let open Elastic_apm_core in
-  let agent =
-    Elastic_apm_core.Metadata.Agent.make ~name:"OCaml" ~version:"0.1.0"
-  in
-  let service =
-    Elastic_apm_core.Metadata.Service.make ~language:Metadata.Language.t
-      ~runtime:Metadata.Runtime.t ~agent "demo-apm-service"
-  in
-  Elastic_apm_core.Metadata.make ~system:(Metadata.System.make ()) service
+  let service = Elastic_apm_core.Metadata.Service.make "demo-apm-service" in
+  Elastic_apm_core.Metadata.make service
 ;;
 
 let fail span b =
@@ -47,8 +40,10 @@ let () =
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level ~all:true (Some Info);
   let reporter =
-    Elastic_apm_lwt_reporter.Reporter.create ~apm_server:server_url
-      ~server_token:secret_token (metadata ())
+    let host =
+      Elastic_apm_lwt_reporter.Reporter.Host.make server_url ~token:secret_token
+    in
+    Elastic_apm_lwt_reporter.Reporter.create host (metadata ())
   in
   let open Elastic_apm_core in
   let trace_id = Id.Trace_id.create () in
