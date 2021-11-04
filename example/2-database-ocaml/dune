@@ -1,0 +1,12 @@
+(executable
+ (name hello)
+ (libraries base opium pgx_lwt_unix fmt.tty logs.fmt)
+ (preprocess
+  (pps lwt_ppx ppx_yojson_conv)))
+
+(env
+ (default
+  (flags (:standard)))
+ (static
+  (flags
+   (:standard -ccopt -static))))
