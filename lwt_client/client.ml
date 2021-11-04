@@ -91,14 +91,29 @@ module Span = struct
   ;;
 end
 
+let report_exn f context =
+  match%lwt f context with
+  | result -> Lwt.return result
+  | exception exn ->
+    let backtrace = Printexc.get_raw_backtrace () in
+    let err =
+      Error.make ~random_state:!Global_state.state ~trace_id:context.trace_id
+        ~backtrace ~exn
+        ~timestamp:(Elastic_apm_core.Timestamp.now ())
+        ~parent_id:context.id ~transaction_id:context.transaction_id ()
+    in
+    Global_state.push (Error err);
+    raise exn
+;;
+
 let with_transaction ?context ~kind name f =
   let context = Transaction.init ?context ~kind name in
-  (f context) [%lwt.finally Lwt.return (Transaction.close context)]
+  (report_exn f context) [%lwt.finally Lwt.return (Transaction.close context)]
 ;;
 
 let with_span context ~kind name f =
   let context = Span.init context ~kind name in
   context.span_count <-
     Elastic_apm_core.Transaction.Span_count.add_started context.span_count 1;
-  (f context) [%lwt.finally Lwt.return (Span.close context)]
+  (report_exn f context) [%lwt.finally Lwt.return (Span.close context)]
 ;;
