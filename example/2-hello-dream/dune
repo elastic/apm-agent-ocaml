@@ -1,5 +1,0 @@
-(executable
- (name hello)
- (libraries base dream)
- (preprocess
-  (pps lwt_ppx ppx_yojson_conv)))

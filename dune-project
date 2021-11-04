@@ -27,11 +27,11 @@
   (ocaml
    (>= 4.12.0))
   base
-  dream
   opium
   logs
   fmt
   lwt_ppx
+  tls
   cohttp-lwt-unix
   (lwt
    (>= 5.3.0))
