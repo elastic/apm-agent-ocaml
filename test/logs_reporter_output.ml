@@ -9,7 +9,12 @@ let state = Random.State.make [| 1; 2; 3; 4; 5 |]
 
 let service = Elastic_apm_core.Metadata.Service.make "testservice"
 let process = Elastic_apm_core.Metadata.Process.make 1 "testprocess"
-let metadata = Elastic_apm_core.Metadata.make ~process service
+let system_info =
+  Elastic_apm_core.System_info.Platform.make ~architecture:"testarch"
+    ~hostname:"testhost" ~platform:"testplatform"
+;;
+let system = Elastic_apm_core.Metadata.System.make ~system_info ()
+let metadata = Elastic_apm_core.Metadata.make ~system ~process service
 
 let trace_id = Elastic_apm_core.Id.Trace_id.create_gen state
 let transaction =
