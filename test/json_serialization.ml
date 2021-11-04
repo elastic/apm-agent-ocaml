@@ -90,11 +90,9 @@ let%expect_test "metadata - system" =
     } |}]
 ;;
 
-let agent = Metadata.Agent.make ~name:"secret agent" ~version:"vNext"
-
 let%expect_test "metadata - agent" =
-  print_json (Metadata.Agent.yojson_of_t agent);
-  [%expect {| { "name": "secret agent", "version": "vNext" } |}]
+  print_json (Metadata.Agent.yojson_of_t Metadata.Agent.t);
+  [%expect {| { "name": "OCaml", "version": "n/a" } |}]
 ;;
 
 let framework = Metadata.Framework.make ~version:"beta" "frame"
@@ -148,8 +146,8 @@ let%expect_test "metadata - cloud" =
 
 let%expect_test "metadata - service" =
   let service =
-    Metadata.Service.make ~version:"v1" ~environment:"env" ~agent ~framework
-      ~language ~runtime ~node:"central" "universal"
+    Metadata.Service.make ~version:"v1" ~environment:"env" ~framework
+      ~node:"central" "universal"
   in
   print_json (Metadata.Service.yojson_of_t service);
   [%expect
@@ -158,7 +156,7 @@ let%expect_test "metadata - service" =
       "name": "universal",
       "version": "v1",
       "environment": "env",
-      "agent": { "name": "secret agent", "version": "vNext" },
+      "agent": { "name": "OCaml", "version": "n/a" },
       "framework": { "name": "frame", "version": "beta" },
       "language": { "name": "OCaml", "version": "4.13.1" },
       "runtime": { "name": "OCaml", "version": "4.13.1" },
@@ -166,7 +164,13 @@ let%expect_test "metadata - service" =
     } |}];
   let service = Metadata.Service.make "universal" in
   print_json (Metadata.Service.yojson_of_t service);
-  [%expect {| { "name": "universal" } |}]
+  [%expect {|
+    {
+      "name": "universal",
+      "agent": { "name": "OCaml", "version": "n/a" },
+      "language": { "name": "OCaml", "version": "4.13.1" },
+      "runtime": { "name": "OCaml", "version": "4.13.1" }
+    } |}]
 ;;
 
 let user =
@@ -184,7 +188,7 @@ let%expect_test "metadata - user" =
 ;;
 
 let metadata =
-  Metadata.make ~process ~system ~agent ~framework ~cloud ~user
+  Metadata.make ~process ~system ~framework ~cloud ~user
     (Metadata.Service.make "testservice")
 ;;
 
@@ -205,7 +209,7 @@ let%expect_test "metadata" =
         "platform": "testplatform",
         "container": { "id": "hiimacontainer" }
       },
-      "agent": { "name": "secret agent", "version": "vNext" },
+      "agent": { "name": "OCaml", "version": "n/a" },
       "framework": { "name": "frame", "version": "beta" },
       "language": { "name": "OCaml", "version": "4.13.1" },
       "runtime": { "name": "OCaml", "version": "4.13.1" },
@@ -218,7 +222,12 @@ let%expect_test "metadata" =
         "account": { "id": "012", "name": "abc" },
         "project": { "id": "012", "name": "abc" }
       },
-      "service": { "name": "testservice" },
+      "service": {
+        "name": "testservice",
+        "agent": { "name": "OCaml", "version": "n/a" },
+        "language": { "name": "OCaml", "version": "4.13.1" },
+        "runtime": { "name": "OCaml", "version": "4.13.1" }
+      },
       "user": {
         "username": "admin",
         "id": "000",
@@ -358,7 +367,7 @@ let%expect_test "serialize request payloads" =
           "platform": "testplatform",
           "container": { "id": "hiimacontainer" }
         },
-        "agent": { "name": "secret agent", "version": "vNext" },
+        "agent": { "name": "OCaml", "version": "n/a" },
         "framework": { "name": "frame", "version": "beta" },
         "language": { "name": "OCaml", "version": "4.13.1" },
         "runtime": { "name": "OCaml", "version": "4.13.1" },
@@ -371,7 +380,12 @@ let%expect_test "serialize request payloads" =
           "account": { "id": "012", "name": "abc" },
           "project": { "id": "012", "name": "abc" }
         },
-        "service": { "name": "testservice" },
+        "service": {
+          "name": "testservice",
+          "agent": { "name": "OCaml", "version": "n/a" },
+          "language": { "name": "OCaml", "version": "4.13.1" },
+          "runtime": { "name": "OCaml", "version": "4.13.1" }
+        },
         "user": {
           "username": "admin",
           "id": "000",
@@ -418,7 +432,7 @@ let%expect_test "serialize request payloads" =
             },
             {
               "filename": "test/json_serialization.ml",
-              "lineno": 382,
+              "lineno": 396,
               "function": "Apm_agent_tests__Json_serialization.(fun)",
               "colno": 6
             }

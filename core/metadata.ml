@@ -61,7 +61,15 @@ module Agent = struct
   }
   [@@deriving yojson_of]
 
-  let make ~name ~version = { name; version }
+  let t =
+    let name = "OCaml" in
+    let version =
+      match Build_info.V1.version () with
+      | None -> "n/a"
+      | Some v -> Build_info.V1.Version.to_string v
+    in
+    { name; version }
+  ;;
 end
 
 module Framework = struct
@@ -149,16 +157,15 @@ module Service = struct
   }
   [@@deriving yojson_of]
 
-  let make ?version ?environment ?agent ?framework ?language ?runtime ?node name
-      =
+  let make ?version ?environment ?framework ?node name =
     {
       name;
       version;
       environment;
-      agent;
+      agent = Some Agent.t;
       framework;
-      language;
-      runtime;
+      language = Some Language.t;
+      runtime = Some Runtime.t;
       node = Option.map (fun configured_name -> { configured_name }) node;
     }
   ;;
@@ -203,16 +210,15 @@ type t = {
 
 let make
     ?(process = Lazy.force Process.default)
-    ?system
-    ?agent
+    ?(system = System.make ())
     ?framework
     ?cloud
     ?user
     service =
   {
     process = Some process;
-    system;
-    agent;
+    system = Some system;
+    agent = Some Agent.t;
     framework;
     language = Some Language.t;
     runtime = Some Runtime.t;

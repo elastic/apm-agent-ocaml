@@ -12,15 +12,8 @@ let secret_token = Sys.getenv "DEV_ELASTIC_TOKEN"
 let server_url = Uri.of_string (Sys.getenv "ELASTIC_ENDPOINT")
 
 let metadata () =
-  let open Elastic_apm_core in
-  let agent =
-    Elastic_apm_core.Metadata.Agent.make ~name:"OCaml" ~version:"0.1.0"
-  in
-  let service =
-    Elastic_apm_core.Metadata.Service.make ~language:Metadata.Language.t
-      ~runtime:Metadata.Runtime.t ~agent "demo-apm-service"
-  in
-  Elastic_apm_core.Metadata.make ~system:(Metadata.System.make ()) service
+  let service = Elastic_apm_core.Metadata.Service.make "demo-apm-service" in
+  Elastic_apm_core.Metadata.make service
 ;;
 
 let fail span b =

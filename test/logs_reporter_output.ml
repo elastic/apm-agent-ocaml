@@ -26,7 +26,7 @@ let%expect_test "logs reporter - default logs src" =
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
   [%expect
     {|
-    inline_test_runner_apm_agent_tests.exe: [INFO] {"metadata":{"process":{"pid":1,"title":"testprocess","argv":[]},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"},"service":{"name":"testservice"}}}
+    inline_test_runner_apm_agent_tests.exe: [INFO] {"metadata":{"process":{"pid":1,"title":"testprocess","argv":[]},"agent":{"name":"OCaml","version":"n/a"},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"},"service":{"name":"testservice","agent":{"name":"OCaml","version":"n/a"},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"}}}}
     inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction"}}|}];
   (* No metadata on following log output *)
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
@@ -42,7 +42,7 @@ let%expect_test "logs reporter - custom logs src" =
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
   [%expect
     {|
-    inline_test_runner_apm_agent_tests.exe: [INFO] {"metadata":{"process":{"pid":1,"title":"testprocess","argv":[]},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"},"service":{"name":"testservice"}}}
+    inline_test_runner_apm_agent_tests.exe: [INFO] {"metadata":{"process":{"pid":1,"title":"testprocess","argv":[]},"agent":{"name":"OCaml","version":"n/a"},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"},"service":{"name":"testservice","agent":{"name":"OCaml","version":"n/a"},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"}}}}
     inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction"}} |}];
   (* No metadata on following log output *)
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
