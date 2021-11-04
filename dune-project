@@ -38,6 +38,7 @@
    (>= 5.3.0))
   mtime
   dune-configurator
+  dune-build-info
   ppx_expect
   ppx_yojson_conv
   (ptime
