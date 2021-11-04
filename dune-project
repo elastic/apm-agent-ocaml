@@ -32,6 +32,7 @@
   fmt
   lwt_ppx
   tls
+  pgx_lwt_unix
   cohttp-lwt-unix
   (lwt
    (>= 5.3.0))
