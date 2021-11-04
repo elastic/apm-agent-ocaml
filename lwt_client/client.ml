@@ -1,5 +1,3 @@
-type 'a io = 'a Lwt.t
-
 open Elastic_apm_core
 open Elastic_apm_lwt_reporter
 
