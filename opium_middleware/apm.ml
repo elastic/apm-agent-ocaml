@@ -1,3 +1,29 @@
+module Init = struct
+  let setup_reporter ?host service =
+    let module Reporter = Elastic_apm_lwt_reporter.Reporter in
+    let host =
+      match host with
+      | None -> Reporter.Host.of_env ()
+      | Some _ as h -> h
+    in
+    match host with
+    | None ->
+      Logs.warn (fun m ->
+          m
+            "APM reporting disabled because %s and %s are not defined in the \
+             environment"
+            Reporter.Host.server_env_key Reporter.Host.token_env_key
+      )
+    | Some host ->
+      let reporter =
+        let framework = Elastic_apm_core.Metadata.Framework.make "opium" in
+        let metadata = Elastic_apm_core.Metadata.make ~framework service in
+        Elastic_apm_lwt_reporter.Reporter.create host metadata
+      in
+      Elastic_apm_lwt_client.Client.set_reporter (Some reporter)
+  ;;
+end
+
 module Apm_context = struct
   let sexp_of_apm_context (_ : Elastic_apm_lwt_client.Client.context) :
       Sexplib0.Sexp.t =

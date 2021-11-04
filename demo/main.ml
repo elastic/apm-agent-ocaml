@@ -47,8 +47,10 @@ let () =
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level ~all:true (Some Info);
   let reporter =
-    Elastic_apm_lwt_reporter.Reporter.create ~apm_server:server_url
-      ~server_token:secret_token (metadata ())
+    let host =
+      Elastic_apm_lwt_reporter.Reporter.Host.make server_url ~token:secret_token
+    in
+    Elastic_apm_lwt_reporter.Reporter.create host (metadata ())
   in
   let open Elastic_apm_core in
   let trace_id = Id.Trace_id.create () in

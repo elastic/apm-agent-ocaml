@@ -117,3 +117,11 @@ let with_span context ~kind name f =
     Elastic_apm_core.Transaction.Span_count.add_started context.span_count 1;
   (report_exn f context) [%lwt.finally Lwt.return (Span.close context)]
 ;;
+
+let init_reporter ?framework host service =
+  let reporter =
+    let metadata = Elastic_apm_core.Metadata.make ?framework service in
+    Elastic_apm_lwt_reporter.Reporter.create host metadata
+  in
+  set_reporter (Some reporter)
+;;

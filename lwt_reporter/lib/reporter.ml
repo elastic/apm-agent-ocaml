@@ -1,17 +1,36 @@
 open Lwt.Infix
 
+module Host = struct
+  type t = {
+    server : Uri.t;
+    token : string;
+  }
+
+  let server_env_key = "ELASTIC_APM_SERVER_URL"
+  let token_env_key = "ELASTIC_APM_SECRET_TOKEN"
+
+  let of_env () =
+    match (Sys.getenv_opt server_env_key, Sys.getenv_opt token_env_key) with
+    | (None, _)
+    | (_, None) ->
+      None
+    | (Some server, Some token) -> Some { server = Uri.of_string server; token }
+  ;;
+
+  let make server ~token = { server; token }
+end
+
 type t = {
   metadata : Elastic_apm_core.Metadata.t;
   events : Elastic_apm_core.Request.t Lwt_stream.t;
   push : Elastic_apm_core.Request.t option -> unit;
   max_messages_per_batch : int;
-  apm_server : Uri.t;
-  server_token : string;
+  host : Host.t;
 }
 
 let make_headers t =
   let headers = [ ("content-type", "application/x-ndjson") ] in
-  let auth = `Other (Printf.sprintf "Bearer %s" t.server_token) in
+  let auth = `Other (Printf.sprintf "Bearer %s" t.host.token) in
   Cohttp.Header.add_authorization (Cohttp.Header.of_list headers) auth
 ;;
 
@@ -26,7 +45,7 @@ let make_body events =
 
 let send_events t headers events =
   Logs.info (fun m -> m "Sending events");
-  let uri = Uri.with_path t.apm_server "/intake/v2/events" in
+  let uri = Uri.with_path t.host.server "/intake/v2/events" in
   let body = Cohttp_lwt.Body.of_string (make_body events) in
   Cohttp_lwt_unix.Client.post ~headers ~body uri >>= fun (resp, body) ->
   Logs.info (fun m -> m "Response: %a" Cohttp.Response.pp_hum resp);
@@ -62,18 +81,9 @@ let start_reporter t =
   )
 ;;
 
-let create ?(max_messages_per_batch = 20) ~apm_server ~server_token metadata =
+let create ?(max_messages_per_batch = 20) host metadata =
   let (stream, push) = Lwt_stream.create () in
-  let t =
-    {
-      metadata;
-      events = stream;
-      push;
-      max_messages_per_batch;
-      apm_server;
-      server_token;
-    }
-  in
+  let t = { metadata; events = stream; push; max_messages_per_batch; host } in
   start_reporter t;
   t
 ;;
