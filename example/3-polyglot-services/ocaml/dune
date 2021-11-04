@@ -1,5 +1,11 @@
 (executable
  (name hello)
- (libraries cohttp-lwt-unix opium)
+ (libraries
+  base
+  cohttp-lwt-unix
+  opium
+  elastic-apm-opium-middleware
+  logs.fmt
+  fmt.tty)
  (preprocess
   (pps lwt_ppx ppx_yojson_conv)))

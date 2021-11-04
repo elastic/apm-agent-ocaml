@@ -93,6 +93,7 @@ services:
       port: 4001
       ELASTIC_APM_SERVER: "http://apm-server:8200"
       ELASTIC_APM_TOKEN: ""
+      UPSTREAM_SERVICE: "http://polyglot-example-python:5000"
     expose:
       - 4001
     ports:
@@ -106,10 +107,13 @@ services:
     build:
       context: .
       dockerfile: example/3-polyglot-services/python/Dockerfile
+    environment:
+      ELASTIC_APM_SERVICE_NAME: "python-ping-pong"
+      ELASTIC_APM_SERVER_URL: "http://apm-server:8200"
     expose:
-      - 4002
+      - 5000
     ports:
-      - 4002:5000
+      - 5000:5000
     depends_on:
       apm-server:
         condition: service_healthy

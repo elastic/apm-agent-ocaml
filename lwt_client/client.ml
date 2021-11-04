@@ -24,6 +24,8 @@ type context = {
   mutable span_count : Transaction.Span_count.t;
 }
 
+let trace_id ctx = ctx.trace_id
+
 let make_context ?context ~kind name =
   let start = Mtime_clock.now () in
   let id = Id.Span_id.create_gen !Global_state.random_state in
