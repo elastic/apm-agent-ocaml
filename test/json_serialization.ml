@@ -164,7 +164,8 @@ let%expect_test "metadata - service" =
     } |}];
   let service = Metadata.Service.make "universal" in
   print_json (Metadata.Service.yojson_of_t service);
-  [%expect {|
+  [%expect
+    {|
     {
       "name": "universal",
       "agent": { "name": "OCaml", "version": "n/a" },
@@ -281,6 +282,7 @@ let%expect_test "timestamp" =
 
 let transaction =
   Transaction.make
+    ~timestamp:(Timestamp.of_us_since_epoch (365 * 50 * 86_4000 * 1_000_000))
     ~duration:(Duration.of_span Mtime.Span.one)
     ~id:(Id.Span_id.create_gen state)
     ~span_count:(Transaction.Span_count.make 12)
@@ -293,6 +295,7 @@ let%expect_test "transaction" =
   [%expect
     {|
     {
+      "timestamp": 15768000000000000,
       "duration": 1e-06,
       "id": "a8d16b0a1559dc02",
       "span_count": { "started": 12 },
@@ -302,6 +305,7 @@ let%expect_test "transaction" =
     } |}];
   let transaction =
     Transaction.make
+      ~timestamp:(Timestamp.of_us_since_epoch (365 * 50 * 86_4000 * 1_000_000))
       ~duration:(Duration.of_span Mtime.Span.one)
       ~id:(Id.Span_id.create_gen state)
       ~span_count:(Transaction.Span_count.make ~dropped:5 12)
@@ -312,6 +316,7 @@ let%expect_test "transaction" =
   [%expect
     {|
       {
+        "timestamp": 15768000000000000,
         "duration": 1e-06,
         "id": "4e3d3c0df5a1f610",
         "span_count": { "dropped": 5, "started": 12 },
@@ -342,6 +347,7 @@ let%expect_test "serialize request payloads" =
     {|
     {
       "transaction": {
+        "timestamp": 15768000000000000,
         "duration": 1e-06,
         "id": "a8d16b0a1559dc02",
         "span_count": { "started": 12 },
@@ -432,7 +438,7 @@ let%expect_test "serialize request payloads" =
             },
             {
               "filename": "test/json_serialization.ml",
-              "lineno": 396,
+              "lineno": 402,
               "function": "Apm_agent_tests__Json_serialization.(fun)",
               "colno": 6
             }

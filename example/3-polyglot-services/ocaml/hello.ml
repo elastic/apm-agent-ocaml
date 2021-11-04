@@ -31,7 +31,17 @@ let upstream_handler_greet req =
   let url =
     Uri.with_path upstream_service (String.concat ~sep:"/" [ greet; name ])
   in
-  Client.get url >>= fun (_resp, body) ->
+  let apm_ctx = Elastic_apm_opium_middleware.Apm.Apm_context.get req in
+  Elastic_apm_lwt_client.Client.with_span apm_ctx ~kind:"http"
+    "fetch greeting from upstream" (fun ctx ->
+      let trace_id = Elastic_apm_lwt_client.Client.trace_id ctx in
+      let headers =
+        Cohttp.Header.of_list
+          [ ("traceparent", Elastic_apm_core.Id.Trace_id.to_hex trace_id) ]
+      in
+      Client.get ~headers url
+  )
+  >>= fun (_resp, body) ->
   body |> Cohttp_lwt.Body.to_string >|= fun body ->
   Opium.Response.of_plain_text body
 ;;

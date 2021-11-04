@@ -13,6 +13,7 @@ module Span_count : sig
 end
 
 type t = {
+  timestamp : Timestamp.t;
   duration : Duration.t;
   id : Id.Span_id.t;
   span_count : Span_count.t;
@@ -25,6 +26,7 @@ type t = {
 
 val make :
   ?parent_id:Id.Span_id.t ->
+  timestamp:Timestamp.t ->
   duration:Duration.t ->
   id:Id.Span_id.t ->
   span_count:Span_count.t ->

@@ -1,0 +1,5 @@
+# Local opam switch
+_opam
+
+# Dune build output
+_build
