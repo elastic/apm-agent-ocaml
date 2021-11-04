@@ -29,8 +29,12 @@ let setup_apm () =
     let apm_server = Uri.of_string apm_server in
     let reporter =
       let framework = Elastic_apm_core.Metadata.Framework.make "opium" in
+      let agent =
+        Elastic_apm_core.Metadata.Agent.make ~name:"OCaml" ~version:"0.1.0"
+      in
       let service =
-        Elastic_apm_core.Metadata.Service.make "elastic-apm-opium-example"
+        Elastic_apm_core.Metadata.Service.make ~agent
+          "elastic-apm-opium-example"
       in
       let metadata = Elastic_apm_core.Metadata.make ~framework service in
       Elastic_apm_lwt_reporter.Reporter.create ~apm_server ~server_token
@@ -40,6 +44,9 @@ let setup_apm () =
 ;;
 
 let () =
+  Fmt_tty.setup_std_outputs ();
+  Logs.set_level (Some Debug);
+  Logs.set_reporter (Logs_fmt.reporter ());
   setup_apm ();
   App.empty
   |> App.middleware Elastic_apm_opium_middleware.Apm.m
