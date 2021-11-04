@@ -1,5 +1,5 @@
 (executable
  (name hello)
- (libraries base dream)
+ (libraries cohttp-lwt-unix opium)
  (preprocess
   (pps lwt_ppx ppx_yojson_conv)))
