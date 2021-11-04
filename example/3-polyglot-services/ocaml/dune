@@ -1,0 +1,5 @@
+(executable
+ (name hello)
+ (libraries cohttp-lwt-unix opium)
+ (preprocess
+  (pps lwt_ppx ppx_yojson_conv)))

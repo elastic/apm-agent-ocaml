@@ -12,17 +12,16 @@ let reverse_handler req =
     |> Yojson.Safe.from_string
     |> message_object_of_yojson
   in
- 
+
   let rev_body = 
     `String message_object.message
     |> Yojson.Safe.to_string
     |> String.rev
   in
-  Response.make ~body:(Body.of_string rev_body) () |> Lwt.return
-;;
+  Response.make ~body:(Body.of_string rev_body) () 
+  |> Lwt.return
 
-let _ = 
+let () = 
   App.empty
   |> App.post "/reverse" reverse_handler
   |> App.run_command
-;;
