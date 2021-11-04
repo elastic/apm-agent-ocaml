@@ -4,12 +4,14 @@ open Elastic_apm_lwt_reporter
 module Global_state = struct
   let reporter : Reporter.t option ref = ref None
 
-  let state : Random.State.t ref = ref (Random.State.make_self_init ())
+  let random_state : Random.State.t ref = ref (Random.State.make_self_init ())
 
   let push request =
     Option.iter (fun rep -> Reporter.push rep request) !reporter
   ;;
 end
+
+let set_reporter reporter = Global_state.reporter := reporter
 
 type context = {
   start : Mtime.t;
@@ -24,7 +26,7 @@ type context = {
 
 let make_context ?context ~kind name =
   let start = Mtime_clock.now () in
-  let id = Id.Span_id.create_gen !Global_state.state in
+  let id = Id.Span_id.create_gen !Global_state.random_state in
   let parent_id =
     match context with
     | None -> id
@@ -32,7 +34,7 @@ let make_context ?context ~kind name =
   in
   let trace_id =
     match context with
-    | None -> Id.Trace_id.create_gen !Global_state.state
+    | None -> Id.Trace_id.create_gen !Global_state.random_state
     | Some ctx -> ctx.trace_id
   in
   let transaction_id =
@@ -95,8 +97,8 @@ let report_exn f context =
   | exception exn ->
     let backtrace = Printexc.get_raw_backtrace () in
     let err =
-      Error.make ~random_state:!Global_state.state ~trace_id:context.trace_id
-        ~backtrace ~exn
+      Error.make ~random_state:!Global_state.random_state
+        ~trace_id:context.trace_id ~backtrace ~exn
         ~timestamp:(Elastic_apm_core.Timestamp.now ())
         ~parent_id:context.id ~transaction_id:context.transaction_id ()
     in
