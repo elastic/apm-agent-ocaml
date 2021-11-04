@@ -72,3 +72,14 @@
   logs
   (elastic-apm
    (= :version))))
+
+(package
+ (name elastic-apm-opium-middleware)
+ (synopsis "Opium middleware for Elastic APM")
+ (description "Application performance monitoring for opium services")
+ (depends
+  (ocaml
+   (>= 4.12.0))
+  opium
+  (elastic-apm-lwt-client
+   (= :version))))
