@@ -12,8 +12,8 @@ let reverse_handler req =
   let rev_body =
     `String message_object.message |> Yojson.Safe.to_string |> String.rev
   in
-  Response.make ~body:(Body.of_string rev_body) () 
-  |> Lwt.return
+  Response.make ~body:(Body.of_string rev_body) () |> Lwt.return
+;;
 
 let setup_apm () =
   let server_env = "ELASTIC_APM_SERVER" in
@@ -45,3 +45,4 @@ let () =
   |> App.middleware Elastic_apm_opium_middleware.Apm.m
   |> App.post "/reverse" reverse_handler
   |> App.run_command
+;;
