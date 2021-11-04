@@ -1,4 +1,6 @@
 (library
  (name elastic_apm_lwt_client)
  (public_name elastic-apm-lwt-client)
+ (preprocess
+  (pps lwt_ppx))
  (libraries elastic-apm.core elastic-apm-lwt-reporter))

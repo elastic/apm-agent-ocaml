@@ -40,6 +40,8 @@ let make_id_module byte_count fill_buffer =
   let module M = struct
     type t = string
 
+    let equal = String.equal
+
     let create_gen state =
       let b = Bytes.create byte_count in
       fill_buffer state b ~pos:0;

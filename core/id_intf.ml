@@ -1,6 +1,8 @@
 module type S = sig
   type t [@@deriving yojson_of]
 
+  val equal : t -> t -> bool
+
   val create : unit -> t
 
   val create_gen : Random.State.t -> t

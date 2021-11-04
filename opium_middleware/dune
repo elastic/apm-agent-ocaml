@@ -1,0 +1,6 @@
+(library
+ (name elastic_apm_opium_middleware)
+ (public_name elastic-apm-opium-middleware)
+ (preprocess
+  (pps lwt_ppx))
+ (libraries elastic-apm-lwt-client opium))
