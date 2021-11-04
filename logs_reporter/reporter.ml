@@ -1,6 +1,7 @@
 type t = {
   mutable metadata_logged : bool;
   metadata : Elastic_apm_core.Metadata.t;
+  src : Logs.src;
   log : (module Logs.LOG);
 }
 
@@ -22,5 +23,7 @@ let push t (request : Elastic_apm_core.Request.t) =
 ;;
 
 let create ?(src = Logs.Src.create "elastic-apm.logs-reporter") metadata =
-  { metadata_logged = false; log = Logs.src_log src; metadata }
+  { metadata_logged = false; src; log = Logs.src_log src; metadata }
 ;;
+
+let src t = t.src
