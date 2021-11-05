@@ -74,8 +74,8 @@ services:
       dockerfile: example/1-hello-opium/Dockerfile
     environment:
       port: 4000
-      ELASTIC_APM_SERVER: "http://apm-server:8200"
-      ELASTIC_APM_TOKEN: ""
+      ELASTIC_APM_SERVER_URL: "http://apm-server:8200"
+      ELASTIC_APM_SECRET_TOKEN: ""
     expose:
       - 4000
     ports:
@@ -91,8 +91,8 @@ services:
       dockerfile: example/3-polyglot-services/ocaml/Dockerfile
     environment:
       port: 4001
-      ELASTIC_APM_SERVER: "http://apm-server:8200"
-      ELASTIC_APM_TOKEN: ""
+      ELASTIC_APM_SERVER_URL: "http://apm-server:8200"
+      ELASTIC_APM_SECRET_TOKEN: ""
       UPSTREAM_SERVICE: "http://polyglot-example-python:5000"
     expose:
       - 4001
@@ -142,8 +142,8 @@ services:
       dockerfile: example/2-database-ocaml/Dockerfile
     environment:
       port: 4003
-      ELASTIC_APM_SERVER: "http://apm-server:8200"
-      ELASTIC_APM_TOKEN: ""
+      ELASTIC_APM_SERVER_URL: "http://apm-server:8200"
+      ELASTIC_APM_SECRET_TOKEN: ""
     expose:
       - 4003
     ports:

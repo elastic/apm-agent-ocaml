@@ -48,7 +48,7 @@ let () =
   let open Elastic_apm_core in
   let trace_id = Id.Trace_id.create () in
   let transaction =
-    Transaction.make
+    Transaction.make ~timestamp:(Timestamp.now ())
       ~duration:(Duration.of_span @@ Mtime.Span.of_uint64_ns 80000000L)
       ~id:(Id.Span_id.create ())
       ~span_count:(Transaction.Span_count.make 1)
@@ -62,7 +62,7 @@ let () =
       ~kind:"db" "Test7"
   in
   let transaction2 =
-    Transaction.make
+    Transaction.make ~timestamp:(Timestamp.now ())
       ~duration:(Duration.of_span @@ Mtime.Span.of_uint64_ns 30000000L)
       ~id:(Id.Span_id.create ()) ~parent_id:span.id
       ~span_count:(Transaction.Span_count.make 0)

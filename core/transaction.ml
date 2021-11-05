@@ -19,6 +19,7 @@ module Span_count = struct
 end
 
 type t = {
+  timestamp : Timestamp.t;
   duration : Duration.t;
   id : Id.Span_id.t;
   span_count : Span_count.t;
@@ -29,6 +30,15 @@ type t = {
 }
 [@@deriving yojson_of]
 
-let make ?parent_id ~duration ~id ~span_count ~trace_id ~kind name =
-  { duration; id; span_count; trace_id; type_ = kind; name; parent_id }
+let make ?parent_id ~timestamp ~duration ~id ~span_count ~trace_id ~kind name =
+  {
+    timestamp;
+    duration;
+    id;
+    span_count;
+    trace_id;
+    type_ = kind;
+    name;
+    parent_id;
+  }
 ;;

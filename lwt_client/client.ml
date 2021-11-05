@@ -14,6 +14,7 @@ end
 let set_reporter reporter = Global_state.reporter := reporter
 
 type context = {
+  timestamp : Timestamp.t;
   start : Mtime.t;
   id : Id.Span_id.t;
   transaction_id : Id.Span_id.t;
@@ -27,6 +28,7 @@ type context = {
 let trace_id ctx = ctx.trace_id
 
 let make_context ?context ~kind name =
+  let timestamp = Timestamp.now () in
   let start = Mtime_clock.now () in
   let id = Id.Span_id.create_gen !Global_state.random_state in
   let parent_id =
@@ -45,6 +47,7 @@ let make_context ?context ~kind name =
     | Some ctx -> ctx.transaction_id
   in
   {
+    timestamp;
     start;
     id;
     transaction_id;
@@ -69,8 +72,8 @@ module Transaction = struct
         Some context.parent_id
     in
     let transaction =
-      Transaction.make ?parent_id ~duration ~id:context.id
-        ~span_count:context.span_count ~trace_id:context.trace_id
+      Transaction.make ?parent_id ~timestamp:context.timestamp ~duration
+        ~id:context.id ~span_count:context.span_count ~trace_id:context.trace_id
         ~kind:context.kind context.name
     in
     Global_state.push (Transaction transaction)
@@ -83,11 +86,10 @@ module Span = struct
   let close context =
     let finish = Mtime_clock.now () in
     let duration = Mtime.span context.start finish |> Duration.of_span in
-    let timestamp = Timestamp.now () in
     let span =
       Span.make ~duration ~id:context.id ~kind:context.kind
         ~transaction_id:context.transaction_id ~parent_id:context.parent_id
-        ~trace_id:context.trace_id ~timestamp context.name
+        ~trace_id:context.trace_id ~timestamp:context.timestamp context.name
     in
     Global_state.push (Span span)
   ;;
