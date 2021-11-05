@@ -50,3 +50,18 @@ If you setup format on save in the editor it will automatically format new
 changes via the LSP server to conform to the project's standard formatting.
 
 Now hackity hackity hack ON!
+
+### Running the examples locally
+
+* Install docker + docker compose
+* `docker compose build ocaml-base`
+* `docker compose build`
+* `docker compose up -d`
+
+Once docker compose up finishes the following endpoints will be available:
+
+* http://localhost:5601 -> Kibana
+* http://localhost:4000 -> [OCaml hello-world example](./example/1-hello-opium)
+* http://localhost:4001 -> [OCaml example that talks to a python service](./example/3-polyglot-services/ocaml)
+* http://localhost:5000 -> [Python flask application](./example/3-polyglot-services/python)
+* http://localhost:4003 -> [OCaml example that talks to postgres](./example/2-database-ocaml)
