@@ -21,9 +21,9 @@ module Host = struct
 end
 
 type t = {
-  metadata : Elastic_apm_core.Metadata.t;
-  events : Elastic_apm_core.Request.t Lwt_stream.t;
-  push : Elastic_apm_core.Request.t option -> unit;
+  metadata : Elastic_apm.Metadata.t;
+  events : Elastic_apm.Request.t Lwt_stream.t;
+  push : Elastic_apm.Request.t option -> unit;
   max_messages_per_batch : int;
   host : Host.t;
 }
@@ -37,7 +37,7 @@ let make_headers t =
 let make_body events =
   let jsons =
     List.map
-      (fun e -> Yojson.Safe.to_string (Elastic_apm_core.Request.yojson_of_t e))
+      (fun e -> Yojson.Safe.to_string (Elastic_apm.Request.yojson_of_t e))
       events
   in
   String.concat "\n" jsons
@@ -62,7 +62,7 @@ let start_reporter t =
     >>= function
     | [] -> loop ()
     | requests ->
-      let payload = Elastic_apm_core.Request.Metadata t.metadata :: requests in
+      let payload = Elastic_apm.Request.Metadata t.metadata :: requests in
       send_events t headers payload >>= fun () -> loop ()
   in
 

@@ -1,4 +1,4 @@
-include Elastic_apm_core.Reporter_intf.S
+include Elastic_apm.Reporter_intf.S
 
 module Host : sig
   type t
@@ -13,4 +13,4 @@ module Host : sig
 end
 
 val create :
-  ?max_messages_per_batch:int -> Host.t -> Elastic_apm_core.Metadata.t -> t
+  ?max_messages_per_batch:int -> Host.t -> Elastic_apm.Metadata.t -> t

@@ -1,4 +1,4 @@
-open Elastic_apm_core
+open Elastic_apm
 
 exception Dummy_exn of string
 

@@ -16,8 +16,8 @@ module Init = struct
       )
     | Some host ->
       let reporter =
-        let framework = Elastic_apm_core.Metadata.Framework.make "opium" in
-        let metadata = Elastic_apm_core.Metadata.make ~framework service in
+        let framework = Elastic_apm.Metadata.Framework.make "opium" in
+        let metadata = Elastic_apm.Metadata.make ~framework service in
         Elastic_apm_lwt_reporter.Reporter.create host metadata
       in
       Elastic_apm_lwt_client.Client.set_reporter (Some reporter)
@@ -58,8 +58,8 @@ let m : Rock.Middleware.t =
       | Some traceparent ->
         ( match String.split_on_char '-' traceparent with
         | [ _version; trace_id; parent_id; _flags ] ->
-          let trace_id = Elastic_apm_core.Id.Trace_id.of_hex trace_id in
-          let parent_id = Elastic_apm_core.Id.Span_id.of_hex parent_id in
+          let trace_id = Elastic_apm.Id.Trace_id.of_hex trace_id in
+          let parent_id = Elastic_apm.Id.Span_id.of_hex parent_id in
           Some (trace_id, parent_id)
         | _ -> None
         )

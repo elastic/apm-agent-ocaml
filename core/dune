@@ -1,8 +1,8 @@
 (library
- (name elastic_apm_core)
+ (name elastic_apm)
  (preprocess
   (pps ppx_yojson_conv))
- (public_name elastic-apm.core)
+ (public_name elastic-apm)
  (libraries dune-build-info mtime.clock.os ptime.clock.os unix yojson hex))
 
 (rule

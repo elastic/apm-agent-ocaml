@@ -15,8 +15,8 @@ let upstream_handler req =
   let parent_id = Elastic_apm_lwt_client.Client.id apm_ctx in
   let traceparent =
     Printf.sprintf "00-%s-%s-01"
-      (Elastic_apm_core.Id.Trace_id.to_hex id)
-      (Elastic_apm_core.Id.Span_id.to_hex parent_id)
+      (Elastic_apm.Id.Trace_id.to_hex id)
+      (Elastic_apm.Id.Span_id.to_hex parent_id)
   in
   let headers = Cohttp.Header.of_list [ ("traceparent", traceparent) ] in
   Client.get ~headers upstream_service >>= fun (_resp, body) ->
@@ -37,8 +37,8 @@ let upstream_handler_greet req =
       let parent_id = Elastic_apm_lwt_client.Client.id ctx in
       let traceparent =
         Printf.sprintf "00-%s-%s-01"
-          (Elastic_apm_core.Id.Trace_id.to_hex trace_id)
-          (Elastic_apm_core.Id.Span_id.to_hex parent_id)
+          (Elastic_apm.Id.Trace_id.to_hex trace_id)
+          (Elastic_apm.Id.Span_id.to_hex parent_id)
       in
       let headers = Cohttp.Header.of_list [ ("traceparent", traceparent) ] in
       Client.get ~headers url
@@ -53,7 +53,7 @@ let init () =
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level (Some Debug);
   let service =
-    Elastic_apm_core.Metadata.Service.make "elastic-apm-opium-example-polyglot"
+    Elastic_apm.Metadata.Service.make "elastic-apm-opium-example-polyglot"
   in
   Elastic_apm_opium_middleware.Apm.Init.setup_reporter service
 ;;

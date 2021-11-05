@@ -1,4 +1,4 @@
 (library
  (name elastic_apm_logs_reporter)
  (public_name elastic-apm-logs-reporter)
- (libraries elastic-apm.core logs))
+ (libraries elastic-apm logs))

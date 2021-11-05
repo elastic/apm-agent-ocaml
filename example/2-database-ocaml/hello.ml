@@ -39,14 +39,7 @@ let fetch_messages req =
               | _ -> failwith "Unexpected response from database"
           )
       )
-      (* Sleep for some time so we can demo a nice graph in the apm view *)
-      >>=
-      fun messages ->
-      Lwt_unix.sleep 0.2 >|= fun () -> messages
   )
-  (* Simulate some more busy work *)
-  >>= fun messages ->
-  Lwt_unix.sleep 0.2 >|= fun () -> messages
 ;;
 
 let get_messages req =
@@ -73,7 +66,7 @@ let init () =
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level (Some Info);
   let service =
-    Elastic_apm_core.Metadata.Service.make "elastic-apm-opium-example-database"
+    Elastic_apm.Metadata.Service.make "elastic-apm-opium-example-database"
   in
   Elastic_apm_opium_middleware.Apm.Init.setup_reporter service
 ;;

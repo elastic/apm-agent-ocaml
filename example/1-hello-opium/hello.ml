@@ -19,9 +19,7 @@ let init () =
   Fmt_tty.setup_std_outputs ();
   Logs.set_level (Some Debug);
   Logs.set_reporter (Logs_fmt.reporter ());
-  let service =
-    Elastic_apm_core.Metadata.Service.make "opium-elastic-apm-demo"
-  in
+  let service = Elastic_apm.Metadata.Service.make "opium-elastic-apm-demo" in
   Elastic_apm_opium_middleware.Apm.Init.setup_reporter service
 ;;
 

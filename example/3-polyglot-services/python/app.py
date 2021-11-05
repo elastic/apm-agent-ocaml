@@ -10,7 +10,6 @@ apm = ElasticAPM(app)
 @app.route("/", methods=["GET"])
 def index():
     downstream_service = os.environ['DOWNSTREAM_SERVICE']
-    time.sleep(1)
     r = requests.get(f'{downstream_service}/ping')
     return r.text
 

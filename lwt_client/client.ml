@@ -1,4 +1,4 @@
-open Elastic_apm_core
+open Elastic_apm
 open Elastic_apm_lwt_reporter
 
 module Global_state = struct
@@ -132,7 +132,7 @@ let report_exn f context =
     let err =
       Error.make ~random_state:!Global_state.random_state
         ~trace_id:context.trace_id ~backtrace ~exn
-        ~timestamp:(Elastic_apm_core.Timestamp.now ())
+        ~timestamp:(Elastic_apm.Timestamp.now ())
         ~parent_id:context.id ~transaction_id:context.transaction_id ()
     in
     Global_state.push (Error err);
@@ -147,13 +147,13 @@ let with_transaction ?context ~kind name f =
 let with_span context ~kind name f =
   let context = Span.init context ~kind name in
   context.span_count <-
-    Elastic_apm_core.Transaction.Span_count.add_started context.span_count 1;
+    Elastic_apm.Transaction.Span_count.add_started context.span_count 1;
   (report_exn f context) [%lwt.finally Lwt.return (Span.close context)]
 ;;
 
 let init_reporter ?framework host service =
   let reporter =
-    let metadata = Elastic_apm_core.Metadata.make ?framework service in
+    let metadata = Elastic_apm.Metadata.make ?framework service in
     Elastic_apm_lwt_reporter.Reporter.create host metadata
   in
   set_reporter (Some reporter)

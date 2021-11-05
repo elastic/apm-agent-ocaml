@@ -1,5 +1,5 @@
-include Elastic_apm_core.Reporter_intf.S
+include Elastic_apm.Reporter_intf.S
 
-val create : ?src:Logs.src -> Elastic_apm_core.Metadata.t -> t
+val create : ?src:Logs.src -> Elastic_apm.Metadata.t -> t
 
 val src : t -> Logs.src
