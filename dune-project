@@ -32,6 +32,7 @@
   fmt
   lwt_ppx
   tls
+  hex
   pgx_lwt_unix
   pgx_value_core
   cohttp-lwt-unix

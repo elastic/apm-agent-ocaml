@@ -1,21 +1,5 @@
 let default_rand = Random.State.make_self_init ()
 
-let alphabet = "0123456789abcdef"
-
-let hex_encode s =
-  let b = Bytes.create (String.length s * 2) in
-  let rec loop b_idx s_idx =
-    if s_idx < String.length s then (
-      let ch = Char.code (String.unsafe_get s s_idx) in
-      Bytes.unsafe_set b b_idx (String.unsafe_get alphabet ((ch lsr 4) land 15));
-      Bytes.unsafe_set b (b_idx + 1) (String.unsafe_get alphabet (ch land 15));
-      loop (b_idx + 2) (s_idx + 1)
-    )
-  in
-  loop 0 0;
-  Bytes.unsafe_to_string b
-;;
-
 let fill_64_bits state buf ~pos =
   assert (Bytes.length buf - pos >= 8);
   let a = Random.State.bits state in
@@ -52,7 +36,12 @@ let make_id_module byte_count fill_buffer =
 
     let to_string t = t
 
-    let to_hex t = hex_encode t
+    let to_hex t =
+      match Hex.of_string t with
+      | `Hex t -> t
+    ;;
+
+    let of_hex t = Hex.to_string (`Hex t)
 
     let yojson_of_t t = `String (to_hex t)
   end in

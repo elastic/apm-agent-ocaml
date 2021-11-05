@@ -10,4 +10,6 @@ module type S = sig
   val to_string : t -> string
 
   val to_hex : t -> string
+
+  val of_hex : string -> t
 end

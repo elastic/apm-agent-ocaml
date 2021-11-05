@@ -28,6 +28,34 @@ type context = {
 let trace_id ctx = ctx.trace_id
 let id ctx = ctx.id
 
+let make_context' ?trace_id ?parent_id ~kind name =
+  let timestamp = Timestamp.now () in
+  let start = Mtime_clock.now () in
+  let id = Id.Span_id.create_gen !Global_state.random_state in
+  let parent_id =
+    match parent_id with
+    | None -> id
+    | Some parent_id -> parent_id
+  in
+  let trace_id =
+    match trace_id with
+    | None -> Id.Trace_id.create_gen !Global_state.random_state
+    | Some trace_id -> trace_id
+  in
+  let transaction_id = id in
+  {
+    timestamp;
+    start;
+    id;
+    transaction_id;
+    parent_id;
+    trace_id;
+    kind;
+    name;
+    span_count = Transaction.Span_count.make 0;
+  }
+;;
+
 let make_context ?context ~kind name =
   let timestamp = Timestamp.now () in
   let start = Mtime_clock.now () in

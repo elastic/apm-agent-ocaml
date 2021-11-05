@@ -52,7 +52,28 @@ let m : Rock.Middleware.t =
     let meth = Opium.Method.to_string req.meth in
     let path = req.target |> Uri.of_string |> Uri.path in
     let name = Fmt.str "%s %s" meth path in
-    Elastic_apm_lwt_client.Client.with_transaction ~kind:"http" name (fun apm ->
+    let parent_id =
+      match Httpaf.Headers.get req.headers "traceparent" with
+      | None -> None
+      | Some traceparent ->
+        ( match String.split_on_char '-' traceparent with
+        | [ _version; trace_id; parent_id; _flags ] ->
+          let trace_id = Elastic_apm_core.Id.Trace_id.of_hex trace_id in
+          let parent_id = Elastic_apm_core.Id.Span_id.of_hex parent_id in
+          Some (trace_id, parent_id)
+        | _ -> None
+        )
+    in
+    let ctx =
+      Option.map
+        (fun (trace_id, parent_id) ->
+          Elastic_apm_lwt_client.Client.make_context' ~trace_id ~parent_id
+            ~kind:"http" name
+        )
+        parent_id
+    in
+    Elastic_apm_lwt_client.Client.with_transaction ?context:ctx ~kind:"http"
+      name (fun apm ->
         let env = Rock.Context.add Apm_context.key apm req.env in
         let req = { req with env } in
         handler req
