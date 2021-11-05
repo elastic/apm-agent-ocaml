@@ -3,7 +3,7 @@
 <p align="center">
   <img
     alt="Test and Build OCaml APM Client"
-    src="https://github.com/elastic/apm-agent-ocaml-on-week-2021/actions/workflows/build-client.yml/badge.svg" />
+    src="https://github.com/elastic/apm-agent-ocaml/actions/workflows/build-client.yml/badge.svg" />
 </p>
 
 ## Dev setup
@@ -11,8 +11,8 @@
 Clone
 
 ```bash
-git clone git@github.com:elastic/apm-agent-ocaml-on-week-2021.git
-cd apm-agent-ocaml-on-week-2021
+git clone git@github.com:elastic/apm-agent-ocaml.git
+cd apm-agent-ocaml
 ```
 
 Setup OCaml environment
@@ -34,11 +34,11 @@ capturing changes in output! This gives an almost magical experience where test
 results update as new tests are written _and_ as the library itself evolves.
 
 ```bash
-dune build @runtest -w --auto-promote
+dune test -w --auto-promote
 ```
 
 If you don't have it installed already, watch mode needs `fswatch` which can be
-installed via `brew`:
+installed via `brew` on macOS:
 
 ```bash
 brew install fswatch
@@ -49,7 +49,7 @@ OCaml plugin should automatically detect the local opam switch you just created.
 If you setup format on save in the editor it will automatically format new
 changes via the LSP server to conform to the project's standard formatting.
 
-Now hackity hackity hack ON!
+You should now be ready to work on the OCaml Elastic APM agent!
 
 ### Running the examples locally
 
