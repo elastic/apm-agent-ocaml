@@ -32,8 +32,6 @@ jobs:
 
       - run: echo "⚡️ Ride the Camel"
 
-      - run: opam install ./elastic-apm.opam --deps-only -y
+      - run: opam install . --deps-only --with-test -y
 
-      - run: eval $(opam env) && dune build @runtest && dune build
-
-      - run: shasum -a 256 _build/default/META.elastic-apm
+      - run: opam exec -- dune runtest

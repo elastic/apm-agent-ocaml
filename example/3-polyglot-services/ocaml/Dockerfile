@@ -1,17 +1,21 @@
 FROM ocaml-base as build
 
 RUN mkdir /home/opam/dist
+RUN mkdir /home/opam/vendor
 RUN mkdir /home/opam/dist/lib
 WORKDIR /home/opam/dist
 COPY --chown=opam:opam example/3-polyglot-services/ocaml/ .
 
-COPY --chown=opam:opam elastic-apm.opam elastic-apm-logs-reporter.opam elastic-apm-lwt-client.opam elastic-apm-lwt-reporter.opam elastic-apm-opium-middleware.opam dune-project .
-COPY --chown=opam:opam codegen codegen
-COPY --chown=opam:opam core core
-COPY --chown=opam:opam logs_reporter logs_reporter
-COPY --chown=opam:opam lwt_client lwt_client
-COPY --chown=opam:opam lwt_reporter lwt_client
-COPY --chown=opam:opam opium_middleware opium_middleware
+RUN opam install ./demo_polyglot.opam --deps-only -y
+
+COPY --chown=opam:opam codegen vendor/codegen
+COPY --chown=opam:opam core vendor/core
+COPY --chown=opam:opam logs_reporter vendor/logs_reporter
+COPY --chown=opam:opam lwt_client vendor/lwt_client
+COPY --chown=opam:opam lwt_reporter vendor/lwt_client
+COPY --chown=opam:opam opium_middleware vendor/opium_middleware
+COPY --chown=opam:opam dune-project vendor/dune-project
+
 
 RUN opam exec -- dune build
 

@@ -1,5 +1,6 @@
 (executable
  (name hello)
+ (public_name demo_database)
  (libraries
   base
   opium

@@ -26,23 +26,13 @@
  (depends
   (ocaml
    (>= 4.12.0))
-  base
-  opium
-  logs
-  fmt
-  lwt_ppx
-  tls
   hex
-  pgx_lwt_unix
-  pgx_value_core
-  cohttp-lwt-unix
-  (lwt
-   (>= 5.3.0))
   mtime
   dune-configurator
   dune-build-info
-  ppx_expect
+  (ppx_expect :with-test)
   ppx_yojson_conv
+  yojson
   (ptime
    (>= 0.8.5))))
 

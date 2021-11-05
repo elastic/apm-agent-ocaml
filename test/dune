@@ -2,16 +2,5 @@
  (name apm_agent_tests)
  (inline_tests)
  (preprocess
-  (pps
-   ppx_expect
-   ppx_yojson_conv
-   base_quickcheck.ppx_quickcheck
-   ppx_sexp_conv))
- (libraries
-  core_kernel
-  base_quickcheck
-  elastic-apm
-  elastic-apm-logs-reporter
-  fmt.tty
-  logs.fmt
-  yojson))
+  (pps ppx_expect ppx_yojson_conv))
+ (libraries elastic-apm elastic-apm-logs-reporter fmt.tty logs.fmt yojson))

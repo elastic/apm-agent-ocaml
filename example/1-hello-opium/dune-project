@@ -1,1 +1,10 @@
 (lang dune 2.9)
+
+(generate_opam_files true)
+
+(package
+  (name demo_hello_world)
+  (depends
+    lwt
+    opium
+    lwt_ppx))

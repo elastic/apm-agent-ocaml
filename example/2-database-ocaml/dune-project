@@ -1,1 +1,12 @@
 (lang dune 2.9)
+
+(generate_opam_files true)
+
+(package
+  (name demo_database)
+  (depends
+    lwt
+    opium
+    pgx_lwt_unix
+    pgx_value_core
+    lwt_ppx))

@@ -1,5 +1,6 @@
 (executable
  (name hello)
+ (public_name dune_polyglot)
  (libraries
   base
   cohttp-lwt-unix
