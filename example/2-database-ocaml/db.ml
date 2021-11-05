@@ -1,11 +1,14 @@
+open Base
 open Opium
+
+let db_host = Option.value ~default:"localhost" (Sys.getenv "PG_HOST")
 
 let create_db_pool size =
   Lwt_pool.create size
     ~validate:(fun conn -> Pgx_lwt_unix.alive conn)
     ~dispose:(fun conn -> Pgx_lwt_unix.close conn)
     (fun () ->
-      Pgx_lwt_unix.connect ~host:"test-postgres" ~user:"ocaml_demo"
+      Pgx_lwt_unix.connect ~host:db_host ~user:"ocaml_demo"
         ~password:"ocaml_demo" ~database:"ocaml_demo" ()
     )
 ;;

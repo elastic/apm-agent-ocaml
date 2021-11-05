@@ -11,16 +11,15 @@ let ping_handler _req = Opium.Response.of_plain_text "pong" |> Lwt.return
 
 let upstream_handler req =
   let apm_ctx = Elastic_apm_opium_middleware.Apm.Apm_context.get req in
-  Elastic_apm_lwt_client.Client.with_span apm_ctx ~kind:"http"
-    "fetch data from upstream" (fun ctx ->
-      let trace_id = Elastic_apm_lwt_client.Client.trace_id ctx in
-      let headers =
-        Cohttp.Header.of_list
-          [ ("traceparent", Elastic_apm_core.Id.Trace_id.to_hex trace_id) ]
-      in
-      Client.get ~headers upstream_service
-  )
-  >>= fun (_resp, body) ->
+  let id = Elastic_apm_lwt_client.Client.trace_id apm_ctx in
+  let parent_id = Elastic_apm_lwt_client.Client.id apm_ctx in
+  let traceparent =
+    Printf.sprintf "00-%s-%s-01"
+      (Elastic_apm_core.Id.Trace_id.to_hex id)
+      (Elastic_apm_core.Id.Span_id.to_hex parent_id)
+  in
+  let headers = Cohttp.Header.of_list [ ("traceparent", traceparent) ] in
+  Client.get ~headers upstream_service >>= fun (_resp, body) ->
   body |> Cohttp_lwt.Body.to_string >|= fun body ->
   Opium.Response.of_plain_text body
 ;;
@@ -35,10 +34,13 @@ let upstream_handler_greet req =
   Elastic_apm_lwt_client.Client.with_span apm_ctx ~kind:"http"
     "fetch greeting from upstream" (fun ctx ->
       let trace_id = Elastic_apm_lwt_client.Client.trace_id ctx in
-      let headers =
-        Cohttp.Header.of_list
-          [ ("traceparent", Elastic_apm_core.Id.Trace_id.to_hex trace_id) ]
+      let parent_id = Elastic_apm_lwt_client.Client.id ctx in
+      let traceparent =
+        Printf.sprintf "00-%s-%s-01"
+          (Elastic_apm_core.Id.Trace_id.to_hex trace_id)
+          (Elastic_apm_core.Id.Span_id.to_hex parent_id)
       in
+      let headers = Cohttp.Header.of_list [ ("traceparent", traceparent) ] in
       Client.get ~headers url
   )
   >>= fun (_resp, body) ->

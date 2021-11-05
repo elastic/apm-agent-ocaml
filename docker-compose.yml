@@ -110,6 +110,8 @@ services:
     environment:
       ELASTIC_APM_SERVICE_NAME: "python-ping-pong"
       ELASTIC_APM_SERVER_URL: "http://apm-server:8200"
+      ELASTIC_APM_SECRET_TOKEN: ""
+      DOWNSTREAM_SERVICE: "http://polyglot-example-ocaml:4001"
     expose:
       - 5000
     ports:
@@ -144,6 +146,7 @@ services:
       port: 4003
       ELASTIC_APM_SERVER_URL: "http://apm-server:8200"
       ELASTIC_APM_SECRET_TOKEN: ""
+      PG_HOST: "test-postgres"
     expose:
       - 4003
     ports:

@@ -33,6 +33,7 @@
   lwt_ppx
   tls
   pgx_lwt_unix
+  pgx_value_core
   cohttp-lwt-unix
   (lwt
    (>= 5.3.0))

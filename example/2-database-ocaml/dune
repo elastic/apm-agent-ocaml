@@ -4,6 +4,7 @@
   base
   opium
   pgx_lwt_unix
+  pgx_value_core
   fmt.tty
   logs.fmt
   elastic-apm-opium-middleware)

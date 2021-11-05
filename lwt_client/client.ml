@@ -26,6 +26,7 @@ type context = {
 }
 
 let trace_id ctx = ctx.trace_id
+let id ctx = ctx.id
 
 let make_context ?context ~kind name =
   let timestamp = Timestamp.now () in

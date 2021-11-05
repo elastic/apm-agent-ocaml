@@ -4,6 +4,8 @@ module type S = sig
 
   val trace_id : context -> Id.Trace_id.t
 
+  val id : context -> Id.Span_id.t
+
   module Transaction : sig
     val init : ?context:context -> kind:string -> string -> context
 
