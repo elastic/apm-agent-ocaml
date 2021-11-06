@@ -20,6 +20,7 @@ depends: [
   "dune" {>= "2.9"}
   "ocaml" {>= "4.12.0"}
   "opium"
+  "dune-build-info"
   "elastic-apm-lwt-client" {= version}
   "odoc" {with-doc}
 ]

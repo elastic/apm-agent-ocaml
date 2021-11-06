@@ -75,5 +75,6 @@
   (ocaml
    (>= 4.12.0))
   opium
+  dune-build-info
   (elastic-apm-lwt-client
    (= :version))))
