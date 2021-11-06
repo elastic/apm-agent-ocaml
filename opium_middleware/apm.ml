@@ -1,5 +1,11 @@
 module Init = struct
-  let setup_reporter ?host service =
+  let setup_reporter ?host ?version ?environment ?node service_name =
+    let open Elastic_apm in
+    let service =
+      Metadata.Service.make ?version ?environment ?node
+        ~framework:(Metadata.Framework.make "Opium")
+        service_name
+    in
     let module Reporter = Elastic_apm_lwt_reporter.Reporter in
     let host =
       match host with

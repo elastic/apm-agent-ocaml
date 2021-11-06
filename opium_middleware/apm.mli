@@ -1,7 +1,10 @@
 module Init : sig
   val setup_reporter :
     ?host:Elastic_apm_lwt_reporter.Reporter.Host.t ->
-    Elastic_apm.Metadata.Service.t ->
+    ?version:string ->
+    ?environment:string ->
+    ?node:string ->
+    string ->
     unit
 end
 
