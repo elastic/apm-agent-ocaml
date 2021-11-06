@@ -10,7 +10,7 @@ module Init = struct
             (Build_info.V1.Statically_linked_library.version library)
       in
       Metadata.Service.make ?version ?environment ?node
-        ~framework:(Metadata.Framework.make ?version:framework_version "Opium")
+        ~framework:(Metadata.Framework.make ?version:framework_version "Rock")
         service_name
     in
     let module Reporter = Elastic_apm_lwt_reporter.Reporter in
@@ -61,7 +61,7 @@ end
 
 let m : Rock.Middleware.t =
   let filter handler (req : Rock.Request.t) =
-    let meth = Opium.Method.to_string req.meth in
+    let meth = Httpaf.Method.to_string req.meth in
     let path = req.target |> Uri.of_string |> Uri.path in
     let name = Fmt.str "%s %s" meth path in
     let parent_id =

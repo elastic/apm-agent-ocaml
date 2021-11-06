@@ -18,6 +18,7 @@ depends: [
   "dune" {>= "2.9"}
   "ocaml" {>= "4.12.0"}
   "lwt"
+  "lwt_ppx"
   "cohttp-lwt-unix"
   "elastic-apm" {= version}
   "elastic-apm-lwt-reporter" {= version}
