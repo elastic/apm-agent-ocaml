@@ -86,7 +86,6 @@ type t [@@deriving yojson_of]
 val make :
   ?process:Process.t ->
   ?system:System.t ->
-  ?framework:Framework.t ->
   ?cloud:Cloud.t ->
   ?user:User.t ->
   Service.t ->

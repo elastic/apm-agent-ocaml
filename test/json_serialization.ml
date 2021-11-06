@@ -189,7 +189,7 @@ let%expect_test "metadata - user" =
 ;;
 
 let metadata =
-  Metadata.make ~process ~system ~framework ~cloud ~user
+  Metadata.make ~process ~system ~cloud ~user
     (Metadata.Service.make "testservice")
 ;;
 
@@ -198,22 +198,6 @@ let%expect_test "metadata" =
   [%expect
     {|
     {
-      "process": {
-        "pid": 2,
-        "title": "process.exe",
-        "ppid": 1,
-        "argv": [ "hello", "world" ]
-      },
-      "system": {
-        "architecture": "256bit",
-        "hostname": "testhost",
-        "platform": "testplatform",
-        "container": { "id": "hiimacontainer" }
-      },
-      "agent": { "name": "OCaml", "version": "n/a" },
-      "framework": { "name": "frame", "version": "beta" },
-      "language": { "name": "OCaml", "version": "4.13.1" },
-      "runtime": { "name": "OCaml", "version": "4.13.1" },
       "cloud": {
         "provider": "name",
         "region": "reg",
@@ -223,11 +207,23 @@ let%expect_test "metadata" =
         "account": { "id": "012", "name": "abc" },
         "project": { "id": "012", "name": "abc" }
       },
+      "process": {
+        "pid": 2,
+        "title": "process.exe",
+        "ppid": 1,
+        "argv": [ "hello", "world" ]
+      },
       "service": {
         "name": "testservice",
         "agent": { "name": "OCaml", "version": "n/a" },
         "language": { "name": "OCaml", "version": "4.13.1" },
         "runtime": { "name": "OCaml", "version": "4.13.1" }
+      },
+      "system": {
+        "architecture": "256bit",
+        "hostname": "testhost",
+        "platform": "testplatform",
+        "container": { "id": "hiimacontainer" }
       },
       "user": {
         "username": "admin",
@@ -361,22 +357,6 @@ let%expect_test "serialize request payloads" =
     {|
     {
       "metadata": {
-        "process": {
-          "pid": 2,
-          "title": "process.exe",
-          "ppid": 1,
-          "argv": [ "hello", "world" ]
-        },
-        "system": {
-          "architecture": "256bit",
-          "hostname": "testhost",
-          "platform": "testplatform",
-          "container": { "id": "hiimacontainer" }
-        },
-        "agent": { "name": "OCaml", "version": "n/a" },
-        "framework": { "name": "frame", "version": "beta" },
-        "language": { "name": "OCaml", "version": "4.13.1" },
-        "runtime": { "name": "OCaml", "version": "4.13.1" },
         "cloud": {
           "provider": "name",
           "region": "reg",
@@ -386,11 +366,23 @@ let%expect_test "serialize request payloads" =
           "account": { "id": "012", "name": "abc" },
           "project": { "id": "012", "name": "abc" }
         },
+        "process": {
+          "pid": 2,
+          "title": "process.exe",
+          "ppid": 1,
+          "argv": [ "hello", "world" ]
+        },
         "service": {
           "name": "testservice",
           "agent": { "name": "OCaml", "version": "n/a" },
           "language": { "name": "OCaml", "version": "4.13.1" },
           "runtime": { "name": "OCaml", "version": "4.13.1" }
+        },
+        "system": {
+          "architecture": "256bit",
+          "hostname": "testhost",
+          "platform": "testplatform",
+          "container": { "id": "hiimacontainer" }
         },
         "user": {
           "username": "admin",
@@ -438,7 +430,7 @@ let%expect_test "serialize request payloads" =
             },
             {
               "filename": "test/json_serialization.ml",
-              "lineno": 402,
+              "lineno": 394,
               "function": "Apm_agent_tests__Json_serialization.(fun)",
               "colno": 6
             }

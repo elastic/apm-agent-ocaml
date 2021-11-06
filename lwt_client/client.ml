@@ -151,9 +151,9 @@ let with_span context ~kind name f =
   (report_exn f context) [%lwt.finally Lwt.return (Span.close context)]
 ;;
 
-let init_reporter ?framework host service =
+let init_reporter host service =
   let reporter =
-    let metadata = Elastic_apm.Metadata.make ?framework service in
+    let metadata = Elastic_apm.Metadata.make service in
     Elastic_apm_lwt_reporter.Reporter.create host metadata
   in
   set_reporter (Some reporter)

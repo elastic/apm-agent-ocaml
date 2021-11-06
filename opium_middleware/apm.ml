@@ -16,8 +16,7 @@ module Init = struct
       )
     | Some host ->
       let reporter =
-        let framework = Elastic_apm.Metadata.Framework.make "opium" in
-        let metadata = Elastic_apm.Metadata.make ~framework service in
+        let metadata = Elastic_apm.Metadata.make service in
         Elastic_apm_lwt_reporter.Reporter.create host metadata
       in
       Elastic_apm_lwt_client.Client.set_reporter (Some reporter)
