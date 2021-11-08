@@ -19,8 +19,10 @@ bug-reports: "https://github.com/elastic/apm-agent-ocaml/issues"
 depends: [
   "dune" {>= "2.9"}
   "ocaml" {>= "4.12.0"}
-  "opium"
+  "rock"
   "dune-build-info"
+  "rock"
+  "lwt_ppx"
   "elastic-apm-lwt-client" {= version}
   "odoc" {with-doc}
 ]

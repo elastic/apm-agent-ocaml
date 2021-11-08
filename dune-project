@@ -52,6 +52,7 @@
   (ocaml
    (>= 4.12.0))
   lwt
+  lwt_ppx
   cohttp-lwt-unix
   (elastic-apm
    (= :version))
@@ -74,7 +75,9 @@
  (depends
   (ocaml
    (>= 4.12.0))
-  opium
+  rock
   dune-build-info
+  rock
+  lwt_ppx
   (elastic-apm-lwt-client
    (= :version))))
