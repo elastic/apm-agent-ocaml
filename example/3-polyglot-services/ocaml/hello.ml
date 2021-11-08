@@ -52,10 +52,8 @@ let init () =
   Fmt_tty.setup_std_outputs ();
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level (Some Debug);
-  let service =
-    Elastic_apm.Metadata.Service.make "elastic-apm-opium-example-polyglot"
-  in
-  Elastic_apm_opium_middleware.Apm.Init.setup_reporter service
+  Elastic_apm_opium_middleware.Apm.Init.setup_reporter
+    "elastic-apm-opium-example-polyglot"
 ;;
 
 let () =

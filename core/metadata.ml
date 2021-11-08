@@ -149,7 +149,7 @@ module Service = struct
     name : string;
     version : string option; [@yojson.option]
     environment : string option; [@yojson.option]
-    agent : Agent.t option; [@yojson.option]
+    agent : Agent.t;
     framework : Framework.t option; [@yojson.option]
     language : Language.t option; [@yojson.option]
     runtime : Runtime.t option; [@yojson.option]
@@ -162,7 +162,7 @@ module Service = struct
       name;
       version;
       environment;
-      agent = Some Agent.t;
+      agent = Agent.t;
       framework;
       language = Some Language.t;
       runtime = Some Runtime.t;
@@ -196,14 +196,10 @@ module User = struct
 end
 
 type t = {
-  process : Process.t option; [@yojson.option]
-  system : System.t option; [@yojson.option]
-  agent : Agent.t option; [@yojson.option]
-  framework : Framework.t option; [@yojson.option]
-  language : Language.t option; [@yojson.option]
-  runtime : Runtime.t option; [@yojson.option]
   cloud : Cloud.t option; [@yojson.option]
+  process : Process.t option; [@yojson.option]
   service : Service.t;
+  system : System.t option; [@yojson.option]
   user : User.t option; [@yojson.option]
 }
 [@@deriving yojson_of]
@@ -211,19 +207,8 @@ type t = {
 let make
     ?(process = Lazy.force Process.default)
     ?(system = System.make ())
-    ?framework
     ?cloud
     ?user
     service =
-  {
-    process = Some process;
-    system = Some system;
-    agent = Some Agent.t;
-    framework;
-    language = Some Language.t;
-    runtime = Some Runtime.t;
-    cloud;
-    service;
-    user;
-  }
+  { process = Some process; system = Some system; cloud; service; user }
 ;;

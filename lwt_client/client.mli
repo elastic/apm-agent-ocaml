@@ -10,7 +10,6 @@ val make_context' :
   context
 
 val init_reporter :
-  ?framework:Elastic_apm.Metadata.Framework.t ->
   Elastic_apm_lwt_reporter.Reporter.Host.t ->
   Elastic_apm.Metadata.Service.t ->
   unit

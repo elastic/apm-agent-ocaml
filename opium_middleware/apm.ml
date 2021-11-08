@@ -1,5 +1,18 @@
 module Init = struct
-  let setup_reporter ?host service =
+  let setup_reporter ?host ?version ?environment ?node service_name =
+    let open Elastic_apm in
+    let service =
+      let framework_version =
+        match Build_info.V1.Statically_linked_libraries.find ~name:"rock" with
+        | None -> None
+        | Some library ->
+          Option.map Build_info.V1.Version.to_string
+            (Build_info.V1.Statically_linked_library.version library)
+      in
+      Metadata.Service.make ?version ?environment ?node
+        ~framework:(Metadata.Framework.make ?version:framework_version "Opium")
+        service_name
+    in
     let module Reporter = Elastic_apm_lwt_reporter.Reporter in
     let host =
       match host with
@@ -16,8 +29,7 @@ module Init = struct
       )
     | Some host ->
       let reporter =
-        let framework = Elastic_apm.Metadata.Framework.make "opium" in
-        let metadata = Elastic_apm.Metadata.make ~framework service in
+        let metadata = Elastic_apm.Metadata.make service in
         Elastic_apm_lwt_reporter.Reporter.create host metadata
       in
       Elastic_apm_lwt_client.Client.set_reporter (Some reporter)
