@@ -10,9 +10,10 @@ let optional_var name var =
 ;;
 
 let () =
-  let configurator = C.create "elastic-apm" in
-  let arch = C.ocaml_config_var configurator "architecture" in
-  let system = C.ocaml_config_var configurator "system" in
-  print_endline (optional_var "architecture" arch);
-  print_endline (optional_var "platform" system)
+  C.main ~name:"elastic-apm.codegen" (fun configurator ->
+      let arch = C.ocaml_config_var configurator "architecture" in
+      let system = C.ocaml_config_var configurator "system" in
+      print_endline (optional_var "architecture" arch);
+      print_endline (optional_var "platform" system)
+  )
 ;;
