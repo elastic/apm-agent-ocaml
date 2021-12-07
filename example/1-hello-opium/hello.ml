@@ -19,13 +19,13 @@ let init () =
   Fmt_tty.setup_std_outputs ();
   Logs.set_level (Some Info);
   Logs.set_reporter (Logs_fmt.reporter ());
-  Elastic_apm_opium_middleware.Apm.Init.setup_reporter "opium-elastic-apm-demo"
+  Elastic_apm_rock.Apm.Init.setup_reporter "opium-elastic-apm-demo"
 ;;
 
 let () =
   init ();
   App.empty
-  |> App.middleware Elastic_apm_opium_middleware.Apm.m
+  |> App.middleware Elastic_apm_rock.Apm.m
   |> App.post "/reverse" reverse_handler
   |> App.run_command
 ;;
