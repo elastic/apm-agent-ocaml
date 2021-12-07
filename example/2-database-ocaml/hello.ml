@@ -22,7 +22,7 @@ type payload = { messages : message list } [@@deriving yojson_of]
 let healthcheck _req = Lwt.return (Response.of_plain_text "")
 
 let fetch_messages req =
-  let apm_ctx = Elastic_apm_opium_middleware.Apm.Apm_context.get req in
+  let apm_ctx = Elastic_apm_rock.Apm.Apm_context.get req in
   Elastic_apm_lwt_client.Client.with_span apm_ctx ~kind:"db" "postgres lookup"
     (fun _ctx ->
       Db.with_conn req ~f:(fun conn ->
@@ -49,7 +49,7 @@ let get_messages req =
 
 let insert_message req =
   Body.to_string req.Request.body >>= fun body ->
-  let apm_ctx = Elastic_apm_opium_middleware.Apm.Apm_context.get req in
+  let apm_ctx = Elastic_apm_rock.Apm.Apm_context.get req in
   Elastic_apm_lwt_client.Client.with_span apm_ctx ~kind:"db" "postgres insert"
     (fun _ctx ->
       Db.with_conn req ~f:(fun conn ->
@@ -65,14 +65,13 @@ let init () =
   Fmt_tty.setup_std_outputs ();
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level (Some Info);
-  Elastic_apm_opium_middleware.Apm.Init.setup_reporter
-    "elastic-apm-opium-example-database"
+  Elastic_apm_rock.Apm.Init.setup_reporter "elastic-apm-opium-example-database"
 ;;
 
 let () =
   init ();
   App.empty
-  |> App.middleware Elastic_apm_opium_middleware.Apm.m
+  |> App.middleware Elastic_apm_rock.Apm.m
   |> App.middleware (Db.m 10)
   |> App.middleware Middleware.logger
   |> App.get "/healthcheck" healthcheck

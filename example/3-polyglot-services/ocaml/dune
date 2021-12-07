@@ -1,12 +1,6 @@
 (executable
  (name hello)
  (public_name dune_polyglot)
- (libraries
-  base
-  cohttp-lwt-unix
-  opium
-  elastic-apm-opium-middleware
-  logs.fmt
-  fmt.tty)
+ (libraries base cohttp-lwt-unix opium elastic-apm-rock logs.fmt fmt.tty)
  (preprocess
   (pps lwt_ppx ppx_yojson_conv)))
