@@ -42,7 +42,8 @@
   (ocaml
    (>= 4.12.0))
   lwt
-  cohttp-lwt-unix
+  (http-lwt-client
+    (>= 0.0.5))
   (elastic-apm
    (= :version))))
 

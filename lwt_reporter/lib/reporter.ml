@@ -29,9 +29,10 @@ type t = {
 }
 
 let make_headers t =
-  let headers = [ ("content-type", "application/x-ndjson") ] in
-  let auth = `Other (Printf.sprintf "Bearer %s" t.host.token) in
-  Cohttp.Header.add_authorization (Cohttp.Header.of_list headers) auth
+  [
+    ("content-type", "application/x-ndjson");
+    ("authorization", Printf.sprintf "Bearer %s" t.host.token);
+  ]
 ;;
 
 let make_body events =
@@ -46,11 +47,19 @@ let make_body events =
 let send_events t headers events =
   Logs.info (fun m -> m "Sending events");
   let uri = Uri.with_path t.host.server "/intake/v2/events" in
-  let body = Cohttp_lwt.Body.of_string (make_body events) in
-  Cohttp_lwt_unix.Client.post ~headers ~body uri >>= fun (resp, body) ->
-  Logs.info (fun m -> m "Response: %a" Cohttp.Response.pp_hum resp);
-  Cohttp_lwt.Body.to_string body >|= fun body ->
-  Logs.info (fun m -> m "Body %s" body)
+  let body = make_body events in
+  Http_lwt_client.one_request ~meth:`POST ~headers ~body (Uri.to_string uri)
+  >|= function
+  | Ok (response, body) ->
+    Logs.debug (fun m ->
+        m "Response: %a, body: %a" Http_lwt_client.pp_response response
+          (Format.pp_print_option Format.pp_print_string)
+          body
+    )
+  | Error (`Msg err) ->
+    Logs.err (fun m ->
+        m "Error while pushing an event to the APM server: %S" err
+    )
 ;;
 
 let start_reporter t =
