@@ -8,7 +8,7 @@
   pgx_value_core
   fmt.tty
   logs.fmt
-  elastic-apm-opium-middleware)
+  elastic-apm-rock)
  (preprocess
   (pps lwt_ppx ppx_yojson_conv)))
 

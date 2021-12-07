@@ -69,9 +69,9 @@
    (= :version))))
 
 (package
- (name elastic-apm-opium-middleware)
- (synopsis "Opium middleware for Elastic APM")
- (description "Application performance monitoring for opium services")
+ (name elastic-apm-rock)
+ (synopsis "Rock middleware for Elastic APM")
+ (description "Application performance monitoring for rock services")
  (depends
   (ocaml
    (>= 4.12.0))

@@ -1,6 +1,6 @@
 (executable
  (name hello)
  (public_name demo_hello_world)
- (libraries base elastic-apm-opium-middleware opium logs.fmt fmt.tty)
+ (libraries base elastic-apm-rock opium logs.fmt fmt.tty)
  (preprocess
   (pps lwt_ppx ppx_yojson_conv)))

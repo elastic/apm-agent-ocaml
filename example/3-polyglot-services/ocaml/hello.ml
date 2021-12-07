@@ -10,7 +10,7 @@ type message_object = { name : string } [@@deriving yojson]
 let ping_handler _req = Opium.Response.of_plain_text "pong" |> Lwt.return
 
 let upstream_handler req =
-  let apm_ctx = Elastic_apm_opium_middleware.Apm.Apm_context.get req in
+  let apm_ctx = Elastic_apm_rock.Apm.Apm_context.get req in
   let id = Elastic_apm_lwt_client.Client.trace_id apm_ctx in
   let parent_id = Elastic_apm_lwt_client.Client.id apm_ctx in
   let traceparent =
@@ -30,7 +30,7 @@ let upstream_handler_greet req =
   let url =
     Uri.with_path upstream_service (String.concat ~sep:"/" [ greet; name ])
   in
-  let apm_ctx = Elastic_apm_opium_middleware.Apm.Apm_context.get req in
+  let apm_ctx = Elastic_apm_rock.Apm.Apm_context.get req in
   Elastic_apm_lwt_client.Client.with_span apm_ctx ~kind:"http"
     "fetch greeting from upstream" (fun ctx ->
       let trace_id = Elastic_apm_lwt_client.Client.trace_id ctx in
@@ -52,14 +52,13 @@ let init () =
   Fmt_tty.setup_std_outputs ();
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level (Some Debug);
-  Elastic_apm_opium_middleware.Apm.Init.setup_reporter
-    "elastic-apm-opium-example-polyglot"
+  Elastic_apm_rock.Apm.Init.setup_reporter "elastic-apm-opium-example-polyglot"
 ;;
 
 let () =
   init ();
   App.empty
-  |> App.middleware Elastic_apm_opium_middleware.Apm.m
+  |> App.middleware Elastic_apm_rock.Apm.m
   |> App.get "/ping" ping_handler
   |> App.get "/upstream" upstream_handler
   |> App.get "/upstream/:greet/:name" upstream_handler_greet

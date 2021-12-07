@@ -1,6 +1,6 @@
 (library
- (name elastic_apm_opium_middleware)
- (public_name elastic-apm-opium-middleware)
+ (name elastic_apm_rock)
+ (public_name elastic-apm-rock)
  (preprocess
   (pps lwt_ppx))
  (libraries elastic-apm-lwt-client rock dune-build-info))

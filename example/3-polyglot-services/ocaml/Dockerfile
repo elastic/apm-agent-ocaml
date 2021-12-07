@@ -13,7 +13,7 @@ COPY --chown=opam:opam core vendor/core
 COPY --chown=opam:opam logs_reporter vendor/logs_reporter
 COPY --chown=opam:opam lwt_client vendor/lwt_client
 COPY --chown=opam:opam lwt_reporter vendor/lwt_client
-COPY --chown=opam:opam opium_middleware vendor/opium_middleware
+COPY --chown=opam:opam rock_middleware vendor/rock_middleware
 COPY --chown=opam:opam dune-project vendor/dune-project
 
 
