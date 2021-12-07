@@ -13,4 +13,8 @@ module Host : sig
 end
 
 val create :
-  ?max_messages_per_batch:int -> Host.t -> Elastic_apm.Metadata.t -> t
+  ?cohttp_ctx:Cohttp_lwt_unix.Client.ctx ->
+  ?max_messages_per_batch:int ->
+  Host.t ->
+  Elastic_apm.Metadata.t ->
+  t

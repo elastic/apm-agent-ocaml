@@ -26,6 +26,7 @@ type t = {
   push : Elastic_apm.Request.t option -> unit;
   max_messages_per_batch : int;
   host : Host.t;
+  cohttp_ctx : Cohttp_lwt_unix.Client.ctx option;
 }
 
 let make_headers t =
@@ -47,7 +48,8 @@ let send_events t headers events =
   Logs.info (fun m -> m "Sending events");
   let uri = Uri.with_path t.host.server "/intake/v2/events" in
   let body = Cohttp_lwt.Body.of_string (make_body events) in
-  Cohttp_lwt_unix.Client.post ~headers ~body uri >>= fun (resp, body) ->
+  Cohttp_lwt_unix.Client.post ?ctx:t.cohttp_ctx ~headers ~body uri
+  >>= fun (resp, body) ->
   Logs.info (fun m -> m "Response: %a" Cohttp.Response.pp_hum resp);
   Cohttp_lwt.Body.to_string body >|= fun body ->
   Logs.info (fun m -> m "Body %s" body)
@@ -81,9 +83,18 @@ let start_reporter t =
   )
 ;;
 
-let create ?(max_messages_per_batch = 20) host metadata =
+let create ?cohttp_ctx ?(max_messages_per_batch = 20) host metadata =
   let (stream, push) = Lwt_stream.create () in
-  let t = { metadata; events = stream; push; max_messages_per_batch; host } in
+  let t =
+    {
+      metadata;
+      events = stream;
+      push;
+      max_messages_per_batch;
+      host;
+      cohttp_ctx;
+    }
+  in
   start_reporter t;
   t
 ;;
