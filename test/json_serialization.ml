@@ -278,6 +278,11 @@ let%expect_test "timestamp" =
 
 let transaction =
   Transaction.make
+    ~request:
+      (Context.Http.Request.make
+         ~headers:[ ("foo", "bar"); ("test", "value") ]
+         ~http_version:"HTTP/1.1" ~meth:"GET" (Uri.of_string "/hello")
+      )
     ~timestamp:(Timestamp.of_us_since_epoch (365 * 50 * 86_4000 * 1_000_000))
     ~duration:(Duration.of_span Mtime.Span.one)
     ~id:(Id.Span_id.create_gen state)
@@ -297,7 +302,15 @@ let%expect_test "transaction" =
       "span_count": { "started": 12 },
       "trace_id": "b77ebdf068cb10014b841a2a47df3011",
       "type": "request",
-      "name": "test"
+      "name": "test",
+      "context": {
+        "request": {
+          "headers": { "foo": "bar", "test": "value" },
+          "http_version": "HTTP/1.1",
+          "method": "GET",
+          "url": { "full": "/hello", "pathname": "/hello" }
+        }
+      }
     } |}];
   let transaction =
     Transaction.make
@@ -318,7 +331,8 @@ let%expect_test "transaction" =
         "span_count": { "dropped": 5, "started": 12 },
         "trace_id": "11d0fb00078f8c303deab2a1651e57fc",
         "type": "request",
-        "name": "test"
+        "name": "test",
+        "context": {}
       } |}]
 ;;
 
@@ -349,7 +363,15 @@ let%expect_test "serialize request payloads" =
         "span_count": { "started": 12 },
         "trace_id": "b77ebdf068cb10014b841a2a47df3011",
         "type": "request",
-        "name": "test"
+        "name": "test",
+        "context": {
+          "request": {
+            "headers": { "foo": "bar", "test": "value" },
+            "http_version": "HTTP/1.1",
+            "method": "GET",
+            "url": { "full": "/hello", "pathname": "/hello" }
+          }
+        }
       }
     } |}];
   print_json (Request.yojson_of_t (Request.Metadata metadata));
@@ -430,7 +452,7 @@ let%expect_test "serialize request payloads" =
             },
             {
               "filename": "test/json_serialization.ml",
-              "lineno": 394,
+              "lineno": 416,
               "function": "Apm_agent_tests__Json_serialization.(fun)",
               "colno": 6
             }

@@ -18,6 +18,12 @@ module Span_count = struct
   ;;
 end
 
+type context = {
+  request : Context.Http.Request.t option; [@yojson.option]
+  response : Context.Http.Response.t option; [@yojson.option]
+}
+[@@deriving yojson_of]
+
 type t = {
   timestamp : Timestamp.t;
   duration : Duration.t;
@@ -27,10 +33,22 @@ type t = {
   parent_id : Id.Span_id.t option; [@yojson.option]
   type_ : string; [@key "type"]
   name : string;
+  context : context;
 }
 [@@deriving yojson_of]
 
-let make ?parent_id ~timestamp ~duration ~id ~span_count ~trace_id ~kind name =
+let make
+    ?parent_id
+    ?request
+    ?response
+    ~timestamp
+    ~duration
+    ~id
+    ~span_count
+    ~trace_id
+    ~kind
+    name =
+  let context = { request; response } in
   {
     timestamp;
     duration;
@@ -40,5 +58,6 @@ let make ?parent_id ~timestamp ~duration ~id ~span_count ~trace_id ~kind name =
     type_ = kind;
     name;
     parent_id;
+    context;
   }
 ;;
