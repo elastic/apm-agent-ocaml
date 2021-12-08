@@ -6,6 +6,8 @@ module type S = sig
 
   val id : context -> Id.Span_id.t
 
+  val parent_id : context -> Id.Span_id.t
+
   module Transaction : sig
     val init : ?context:context -> kind:string -> string -> context
 
