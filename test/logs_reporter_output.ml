@@ -33,11 +33,11 @@ let%expect_test "logs reporter - default logs src" =
   [%expect
     {|
     inline_test_runner_apm_agent_tests.exe: [INFO] {"metadata":{"process":{"pid":1,"title":"testprocess","argv":[]},"service":{"name":"testservice","agent":{"name":"OCaml","version":"n/a"},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"}},"system":{"architecture":"testarch","hostname":"testhost","platform":"testplatform"}}}
-    inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"timestamp":15768000000000000,"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction"}}|}];
+    inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"timestamp":15768000000000000,"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction","context":{}}}|}];
   (* No metadata on following log output *)
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
   [%expect
-    {| inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"timestamp":15768000000000000,"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction"}} |}]
+    {| inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"timestamp":15768000000000000,"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction","context":{}}} |}]
 ;;
 
 let%expect_test "logs reporter - custom logs src" =
@@ -49,11 +49,11 @@ let%expect_test "logs reporter - custom logs src" =
   [%expect
     {|
     inline_test_runner_apm_agent_tests.exe: [INFO] {"metadata":{"process":{"pid":1,"title":"testprocess","argv":[]},"service":{"name":"testservice","agent":{"name":"OCaml","version":"n/a"},"language":{"name":"OCaml","version":"4.13.1"},"runtime":{"name":"OCaml","version":"4.13.1"}},"system":{"architecture":"testarch","hostname":"testhost","platform":"testplatform"}}}
-    inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"timestamp":15768000000000000,"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction"}} |}];
+    inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"timestamp":15768000000000000,"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction","context":{}}} |}];
   (* No metadata on following log output *)
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
   [%expect
-    {| inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"timestamp":15768000000000000,"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction"}} |}];
+    {| inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"timestamp":15768000000000000,"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction","context":{}}} |}];
   (* Disable log output or set level too high - no output *)
   Logs.Src.set_level (Elastic_apm_logs_reporter.Reporter.src reporter) None;
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
@@ -69,5 +69,5 @@ let%expect_test "logs reporter - custom logs src" =
     (Some Debug);
   Elastic_apm_logs_reporter.Reporter.push reporter (Transaction transaction);
   [%expect
-    {| inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"timestamp":15768000000000000,"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction"}} |}]
+    {| inline_test_runner_apm_agent_tests.exe: [INFO] {"transaction":{"timestamp":15768000000000000,"duration":80.0,"id":"3e466abbf8b38218","span_count":{"started":1},"trace_id":"5e00cc610bf958d233ad4932f4e954cc","type":"request","name":"testtransaction","context":{}}} |}]
 ;;
