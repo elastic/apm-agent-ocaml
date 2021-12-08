@@ -3,7 +3,14 @@
  (preprocess
   (pps ppx_yojson_conv))
  (public_name elastic-apm)
- (libraries dune-build-info mtime.clock.os ptime.clock.os unix yojson hex))
+ (libraries
+  dune-build-info
+  mtime.clock.os
+  ptime.clock.os
+  unix
+  yojson
+  hex
+  uri))
 
 (rule
  (targets elastic_apm_generated_sysinfo.ml)

@@ -12,6 +12,12 @@ module Span_count : sig
   val add_dropped : t -> int -> t
 end
 
+type context = {
+  request : Context.Http.Request.t option; [@yojson.option]
+  response : Context.Http.Response.t option; [@yojson.option]
+}
+[@@deriving yojson_of]
+
 type t = {
   timestamp : Timestamp.t;
   duration : Duration.t;
@@ -21,11 +27,14 @@ type t = {
   parent_id : Id.Span_id.t option;
   type_ : string;
   name : string;
+  context : context;
 }
 [@@deriving yojson_of]
 
 val make :
   ?parent_id:Id.Span_id.t ->
+  ?request:Context.Http.Request.t ->
+  ?response:Context.Http.Response.t ->
   timestamp:Timestamp.t ->
   duration:Duration.t ->
   id:Id.Span_id.t ->
