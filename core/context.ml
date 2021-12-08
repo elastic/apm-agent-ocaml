@@ -1,4 +1,13 @@
 module Http = struct
+  module Headers = struct
+    type t = (string * string) list
+    let yojson_of_t t =
+      match t with
+      | [] -> `Null
+      | xs -> `Assoc ((List.map (fun (k, v) -> (k, `String v))) xs)
+    ;;
+  end
+
   module Url = struct
     type payload = {
       full : string;
@@ -28,11 +37,13 @@ module Http = struct
     type t = {
       decoded_body_size : int option; [@yojson.option]
       encoded_body_size : int option; [@yojson.option]
-      headers : (string * string) list;
+      headers : Headers.t;
       status_code : int;
       transfer_size : int option; [@yojson.option]
     }
     [@@deriving yojson_of]
+
+    let status_code t = t.status_code
 
     let make
         ?decoded_body_size
@@ -43,8 +54,8 @@ module Http = struct
       {
         decoded_body_size;
         encoded_body_size;
-        headers;
         transfer_size;
+        headers;
         status_code;
       }
     ;;
@@ -53,16 +64,17 @@ module Http = struct
   module Request = struct
     type t = {
       body : string option; [@yojson.option]
-      headers : (string * string) list;
+      headers : Headers.t;
       http_version : string;
       meth : string; [@yojson.key "method"]
       url : Url.t;
-      status_code : int; (* response : response; *)
     }
     [@@deriving yojson_of]
 
-    let make ?body ?(headers = []) ~http_version ~meth ~url status_code =
-      { body; headers; http_version; meth; url; status_code }
+    let url t = t.url
+
+    let make ?body ?(headers = []) ~http_version ~meth url =
+      { body; headers; http_version; meth; url }
     ;;
   end
 end

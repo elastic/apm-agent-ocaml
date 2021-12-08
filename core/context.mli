@@ -10,9 +10,10 @@ module Http : sig
       ?headers:(string * string) list ->
       http_version:string ->
       meth:string ->
-      url:Uri.t ->
-      int ->
+      Uri.t ->
       t
+
+    val url : t -> Url.t
   end
 
   module Response : sig
@@ -24,5 +25,7 @@ module Http : sig
       ?transfer_size:int ->
       int ->
       t
+
+    val status_code : t -> int
   end
 end

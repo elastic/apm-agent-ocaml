@@ -1,6 +1,6 @@
 type http_context = {
-  url : Context.Http.Url.t;
-  status_code : int;
+  url : string;
+  status_code : int option; [@yojson.option]
 }
 [@@deriving yojson_of]
 

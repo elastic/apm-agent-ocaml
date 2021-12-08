@@ -5,6 +5,14 @@ val set_reporter : Elastic_apm_lwt_reporter.Reporter.t option -> unit
 val make_context' :
   ?trace_id:Elastic_apm.Id.Trace_id.t ->
   ?parent_id:Elastic_apm.Id.Span_id.t ->
+  ?request:Elastic_apm.Context.Http.Request.t ->
+  kind:string ->
+  string ->
+  context
+
+val make_context :
+  ?context:context ->
+  ?request:Elastic_apm.Context.Http.Request.t ->
   kind:string ->
   string ->
   context

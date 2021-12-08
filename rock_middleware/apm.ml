@@ -84,11 +84,24 @@ let m : Rock.Middleware.t =
         )
         parent_id
     in
-    Elastic_apm_lwt_client.Client.with_transaction ?context:ctx ~kind:"http"
-      name (fun apm ->
+    let request =
+      Elastic_apm.Context.Http.Request.make
+        ~headers:(Httpaf.Headers.to_list req.headers)
+        ~http_version:(Httpaf.Version.to_string req.version)
+        ~meth (Uri.of_string req.target)
+    in
+    Elastic_apm_lwt_client.Client.with_transaction ~request ?context:ctx
+      ~kind:"http" name (fun apm ->
         let env = Rock.Context.add Apm_context.key apm req.env in
         let req = { req with env } in
-        handler req
+        let%lwt rock_response = handler req in
+        let response =
+          Elastic_apm.Context.Http.Response.make
+            ~headers:(Httpaf.Headers.to_list rock_response.Rock.Response.headers)
+            (Httpaf.Status.to_code rock_response.status)
+        in
+        Elastic_apm_lwt_client.Client.set_response apm response;
+        Lwt.return rock_response
     )
   in
   Rock.Middleware.create ~filter ~name:"Elastic APM"

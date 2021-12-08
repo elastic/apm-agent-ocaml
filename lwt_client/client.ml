@@ -14,6 +14,8 @@ end
 let set_reporter reporter = Global_state.reporter := reporter
 
 type context = {
+  request : Context.Http.Request.t option;
+  mutable response : Context.Http.Response.t option;
   timestamp : Timestamp.t;
   start : Mtime.t;
   id : Id.Span_id.t;
@@ -25,11 +27,13 @@ type context = {
   mutable span_count : Transaction.Span_count.t;
 }
 
+let set_response t response = t.response <- Some response
+
 let trace_id ctx = ctx.trace_id
 let id ctx = ctx.id
 let parent_id ctx = ctx.parent_id
 
-let make_context' ?trace_id ?parent_id ~kind name =
+let make_context' ?trace_id ?parent_id ?request ~kind name =
   let timestamp = Timestamp.now () in
   let start = Mtime_clock.now () in
   let id = Id.Span_id.create_gen !Global_state.random_state in
@@ -45,6 +49,8 @@ let make_context' ?trace_id ?parent_id ~kind name =
   in
   let transaction_id = id in
   {
+    request;
+    response = None;
     timestamp;
     start;
     id;
@@ -57,7 +63,7 @@ let make_context' ?trace_id ?parent_id ~kind name =
   }
 ;;
 
-let make_context ?context ~kind name =
+let make_context ?context ?request ~kind name =
   let timestamp = Timestamp.now () in
   let start = Mtime_clock.now () in
   let id = Id.Span_id.create_gen !Global_state.random_state in
@@ -76,7 +82,15 @@ let make_context ?context ~kind name =
     | None -> id
     | Some ctx -> ctx.transaction_id
   in
+  let request =
+    match (request, context) with
+    | (Some request, _) -> Some request
+    | (None, Some context) -> context.request
+    | (None, None) -> None
+  in
   {
+    request;
+    response = None;
     timestamp;
     start;
     id;
@@ -90,7 +104,9 @@ let make_context ?context ~kind name =
 ;;
 
 module Transaction = struct
-  let init ?context ~kind name = make_context ?context ~kind name
+  let init ?request ?context ~kind name =
+    make_context ?request ?context ~kind name
+  ;;
 
   let close context =
     let finish = Mtime_clock.now () in
@@ -102,8 +118,9 @@ module Transaction = struct
         Some context.parent_id
     in
     let transaction =
-      Transaction.make ?parent_id ~timestamp:context.timestamp ~duration
-        ~id:context.id ~span_count:context.span_count ~trace_id:context.trace_id
+      Transaction.make ?request:context.request ?response:context.response
+        ?parent_id ~timestamp:context.timestamp ~duration ~id:context.id
+        ~span_count:context.span_count ~trace_id:context.trace_id
         ~kind:context.kind context.name
     in
     Global_state.push (Transaction transaction)
@@ -117,7 +134,23 @@ module Span = struct
     let finish = Mtime_clock.now () in
     let duration = Mtime.span context.start finish |> Duration.of_span in
     let span =
-      Span.make ~duration ~id:context.id ~kind:context.kind
+      let http_context =
+        match (context.request, context.response) with
+        | (Some request, Some response) ->
+          Some
+            {
+              Span.url = Uri.to_string (Context.Http.Request.url request);
+              status_code = Some (Context.Http.Response.status_code response);
+            }
+        | (Some request, None) ->
+          Some
+            {
+              Span.url = Uri.to_string (Context.Http.Request.url request);
+              status_code = None;
+            }
+        | _ -> None
+      in
+      Span.make ?http_context ~duration ~id:context.id ~kind:context.kind
         ~transaction_id:context.transaction_id ~parent_id:context.parent_id
         ~trace_id:context.trace_id ~timestamp:context.timestamp context.name
     in
@@ -140,8 +173,8 @@ let report_exn f context =
     raise exn
 ;;
 
-let with_transaction ?context ~kind name f =
-  let context = Transaction.init ?context ~kind name in
+let with_transaction ?context ?request ~kind name f =
+  let context = Transaction.init ?request ?context ~kind name in
   (report_exn f context) [%lwt.finally Lwt.return (Transaction.close context)]
 ;;
 
