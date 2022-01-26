@@ -1,5 +1,7 @@
 open Lwt.Infix
 
+module Log = (val Logs.src_log (Logs.Src.create "elastic_apm.lwt_reporter"))
+
 module Host = struct
   type t = {
     server : Uri.t;
@@ -45,14 +47,14 @@ let make_body events =
 ;;
 
 let send_events t headers events =
-  Logs.info (fun m -> m "Sending events");
+  Log.debug (fun m -> m "Sending events");
   let uri = Uri.with_path t.host.server "/intake/v2/events" in
   let body = Cohttp_lwt.Body.of_string (make_body events) in
   Cohttp_lwt_unix.Client.post ?ctx:t.cohttp_ctx ~headers ~body uri
   >>= fun (resp, body) ->
-  Logs.info (fun m -> m "Response: %a" Cohttp.Response.pp_hum resp);
+  Log.debug (fun m -> m "Response: %a" Cohttp.Response.pp_hum resp);
   Cohttp_lwt.Body.to_string body >|= fun body ->
-  Logs.info (fun m -> m "Body %s" body)
+  Log.debug (fun m -> m "Body %s" body)
 ;;
 
 let start_reporter t =
@@ -71,11 +73,11 @@ let start_reporter t =
   Lwt.async (fun () ->
       Lwt.catch
         (fun () ->
-          Logs.info (fun m -> m "starting loop");
+          Log.debug (fun m -> m "starting loop");
           loop ()
         )
         (fun exn ->
-          Logs.err (fun m ->
+          Log.err (fun m ->
               m "Exception in the reporter loop: %S" (Printexc.to_string exn)
           );
           loop ()
@@ -100,6 +102,6 @@ let create ?cohttp_ctx ?(max_messages_per_batch = 20) host metadata =
 ;;
 
 let push t event =
-  Logs.info (fun m -> m "Pushing events");
+  Log.debug (fun m -> m "Pushing events");
   t.push (Some event)
 ;;
