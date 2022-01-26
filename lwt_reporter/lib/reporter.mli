@@ -1,5 +1,9 @@
 include Elastic_apm.Reporter_intf.S
 
+val log_source : Logs.Src.t
+(** The log source used for all logging within the lwt apm reporter. This can be
+    used to control the logging level filter for this library. *)
+
 module Host : sig
   type t
 

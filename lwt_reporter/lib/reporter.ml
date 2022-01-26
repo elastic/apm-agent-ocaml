@@ -1,6 +1,8 @@
 open Lwt.Infix
 
-module Log = (val Logs.src_log (Logs.Src.create "elastic_apm.lwt_reporter"))
+let log_source = Logs.Src.create "elastic_apm.lwt_reporter"
+
+module Log = (val Logs.src_log log_source)
 
 module Host = struct
   type t = {
