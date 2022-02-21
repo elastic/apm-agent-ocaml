@@ -22,6 +22,8 @@ opam switch create . 4.13.1
 opam install ocamlformat ocamlformat-rpc ocaml-lsp-server
 ```
 
+or you can use [`nix-shell`](https://nixos.org/guides/nix-pills/developing-with-nix-shell.html).
+
 You can run a build in watch mode so new changes are automatically detected and
 rebuilt. In a terminal, in or outside of your editor:
 
