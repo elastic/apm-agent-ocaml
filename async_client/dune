@@ -1,0 +1,6 @@
+(library
+ (name elastic_apm_async_client)
+ (public_name elastic-apm-async-client)
+ (preprocess
+  (pps ppx_jane))
+ (libraries elastic-apm elastic-apm-async-reporter))

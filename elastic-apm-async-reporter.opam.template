@@ -1,0 +1,5 @@
+pin-depends: [
+    [
+        "blue_http.dev" "git+https://github.com/arenadotio/blue-http.git#1140cf44d0828b7bce27cc1ec133aab471e266d0"
+    ]
+]

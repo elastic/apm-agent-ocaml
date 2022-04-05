@@ -17,11 +17,9 @@ bug-reports: "https://github.com/elastic/apm-agent-ocaml/issues"
 depends: [
   "dune" {>= "2.9"}
   "ocaml" {>= "4.12.0"}
-  "lwt"
-  "lwt_ppx"
-  "cohttp-lwt-unix"
+  "async"
+  "blue_http"
   "elastic-apm" {= version}
-  "elastic-apm-async-reporter" {= version}
   "odoc" {with-doc}
 ]
 build: [
@@ -41,3 +39,8 @@ build: [
   ["dune" "install" "-p" name "--create-install-files" name]
 ]
 dev-repo: "git+https://github.com/elastic/apm-agent-ocaml.git"
+pin-depends: [
+    [
+        "blue_http.dev" "git+https://github.com/arenadotio/blue-http.git#1140cf44d0828b7bce27cc1ec133aab471e266d0"
+    ]
+]
