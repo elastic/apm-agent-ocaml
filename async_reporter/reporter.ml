@@ -66,17 +66,19 @@ let send_events (spec : Spec.t) headers events =
     (Cohttp.Code.code_of_status (Cohttp.Response.status resp))
 ;;
 
-let read spec =
+let read spec reader =
   let headers = Spec.to_headers spec in
-  fun reader ->
-    match%bind
-      Pipe.read' ~max_queue_length:spec.max_messages_per_batch reader
-    with
-    | `Eof -> Deferred.unit
-    | `Ok queue ->
-      let requests = Queue.to_list queue in
-      let payload = Elastic_apm.Request.Metadata spec.metadata :: requests in
-      send_events spec headers payload
+  Deferred.repeat_until_finished () (fun () ->
+      match%bind
+        Pipe.read' ~max_queue_length:spec.max_messages_per_batch reader
+      with
+      | `Eof -> return (`Finished ())
+      | `Ok queue ->
+        let requests = Queue.to_list queue in
+        let payload = Elastic_apm.Request.Metadata spec.metadata :: requests in
+        let%map () = send_events spec headers payload in
+        `Repeat ()
+  )
 ;;
 
 let create ?client ?max_messages_per_batch host metadata =
