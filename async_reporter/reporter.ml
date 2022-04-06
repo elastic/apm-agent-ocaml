@@ -76,8 +76,16 @@ let read spec reader =
       | `Ok queue ->
         let requests = Queue.to_list queue in
         let payload = Elastic_apm.Request.Metadata spec.metadata :: requests in
-        let%map () = send_events spec headers payload in
-        `Repeat ()
+        ( match%map
+            Monitor.try_with (fun () -> send_events spec headers payload)
+          with
+        | Ok () -> `Repeat ()
+        | Error exn ->
+          Log.error
+            !"Error while pushing events to APM server: %{sexp: Exn.t}"
+            exn;
+          `Repeat ()
+        )
   )
 ;;
 
@@ -87,6 +95,7 @@ let create ?client ?max_messages_per_batch host metadata =
 ;;
 
 let push t event =
-  Log.debug "Pushing event";
-  Pipe.write_without_pushback t event
+  if Pipe.is_closed t then
+    Log.error "No events will be pushed as the APM reporter is down";
+  Pipe.write_without_pushback_if_open t event
 ;;
