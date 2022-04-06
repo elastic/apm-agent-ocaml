@@ -1,0 +1,204 @@
+open Core
+open Async
+
+open Elastic_apm
+open Elastic_apm_async_reporter
+
+module Global_state = struct
+  let reporter : Reporter.t option ref = ref None
+
+  (* Using Caml.Random here to match the core Elastic_apm module types *)
+  let random_state : Caml.Random.State.t ref =
+    ref (Caml.Random.State.make_self_init ())
+  ;;
+
+  let push request =
+    Option.iter !reporter ~f:(fun rep -> Reporter.push rep request)
+  ;;
+end
+
+let set_reporter reporter = Global_state.reporter := reporter
+
+type context = {
+  request : Context.Http.Request.t option;
+  mutable response : Context.Http.Response.t option;
+  timestamp : Timestamp.t;
+  start : Mtime.t;
+  id : Id.Span_id.t;
+  transaction_id : Id.Span_id.t;
+  parent_id : Id.Span_id.t;
+  trace_id : Id.Trace_id.t;
+  kind : string;
+  name : string;
+  mutable span_count : Transaction.Span_count.t;
+}
+
+let set_response t response = t.response <- Some response
+
+let trace_id ctx = ctx.trace_id
+let id ctx = ctx.id
+let parent_id ctx = ctx.parent_id
+
+let make_context' ?trace_id ?parent_id ?request ~kind name =
+  let timestamp = Timestamp.now () in
+  let start = Mtime_clock.now () in
+  let id = Id.Span_id.create_gen !Global_state.random_state in
+  let parent_id =
+    match parent_id with
+    | None -> id
+    | Some parent_id -> parent_id
+  in
+  let trace_id =
+    match trace_id with
+    | None -> Id.Trace_id.create_gen !Global_state.random_state
+    | Some trace_id -> trace_id
+  in
+  let transaction_id = id in
+  {
+    request;
+    response = None;
+    timestamp;
+    start;
+    id;
+    transaction_id;
+    parent_id;
+    trace_id;
+    kind;
+    name;
+    span_count = Transaction.Span_count.make 0;
+  }
+;;
+
+let make_context ?context ?request ~kind name =
+  let timestamp = Timestamp.now () in
+  let start = Mtime_clock.now () in
+  let id = Id.Span_id.create_gen !Global_state.random_state in
+  let parent_id =
+    match context with
+    | None -> id
+    | Some ctx -> ctx.id
+  in
+  let trace_id =
+    match context with
+    | None -> Id.Trace_id.create_gen !Global_state.random_state
+    | Some ctx -> ctx.trace_id
+  in
+  let transaction_id =
+    match context with
+    | None -> id
+    | Some ctx -> ctx.transaction_id
+  in
+  let request =
+    match (request, context) with
+    | (Some request, _) -> Some request
+    | (None, Some context) -> context.request
+    | (None, None) -> None
+  in
+  {
+    request;
+    response = None;
+    timestamp;
+    start;
+    id;
+    transaction_id;
+    parent_id;
+    trace_id;
+    kind;
+    name;
+    span_count = Transaction.Span_count.make 0;
+  }
+;;
+
+module Transaction = struct
+  let init ?request ?context ~kind name =
+    make_context ?request ?context ~kind name
+  ;;
+
+  let close context =
+    let finish = Mtime_clock.now () in
+    let duration = Mtime.span context.start finish |> Duration.of_span in
+    let parent_id =
+      if Id.Span_id.equal context.id context.parent_id then
+        None
+      else
+        Some context.parent_id
+    in
+    let transaction =
+      Transaction.make ?request:context.request ?response:context.response
+        ?parent_id ~timestamp:context.timestamp ~duration ~id:context.id
+        ~span_count:context.span_count ~trace_id:context.trace_id
+        ~kind:context.kind context.name
+    in
+    Global_state.push (Transaction transaction)
+  ;;
+end
+
+module Span = struct
+  let init context ~kind name = make_context ~context ~kind name
+
+  let close context =
+    let finish = Mtime_clock.now () in
+    let duration = Mtime.span context.start finish |> Duration.of_span in
+    let span =
+      let http_context =
+        match (context.request, context.response) with
+        | (Some request, Some response) ->
+          Some
+            {
+              Span.url = Uri.to_string (Context.Http.Request.url request);
+              status_code = Some (Context.Http.Response.status_code response);
+            }
+        | (Some request, None) ->
+          Some
+            {
+              Span.url = Uri.to_string (Context.Http.Request.url request);
+              status_code = None;
+            }
+        | _ -> None
+      in
+      Span.make ?http_context ~duration ~id:context.id ~kind:context.kind
+        ~transaction_id:context.transaction_id ~parent_id:context.parent_id
+        ~trace_id:context.trace_id ~timestamp:context.timestamp context.name
+    in
+    Global_state.push (Span span)
+  ;;
+end
+
+let report_exn f context =
+  match%bind Monitor.try_with (fun () -> f context) with
+  | Ok result -> Deferred.return result
+  | Error exn ->
+    let backtrace = Caml.Printexc.get_raw_backtrace () in
+    let err =
+      Error.make ~random_state:!Global_state.random_state
+        ~trace_id:context.trace_id ~backtrace ~exn
+        ~timestamp:(Elastic_apm.Timestamp.now ())
+        ~parent_id:context.id ~transaction_id:context.transaction_id ()
+    in
+    Global_state.push (Error err);
+    Caml.Printexc.raise_with_backtrace exn backtrace
+;;
+
+let with_transaction ?context ?request ~kind name f =
+  let context = Transaction.init ?request ?context ~kind name in
+  Monitor.protect
+    (fun () -> report_exn f context)
+    ~finally:(fun () -> Deferred.return (Transaction.close context))
+;;
+
+let with_span context ~kind name f =
+  let context = Span.init context ~kind name in
+  context.span_count <-
+    Elastic_apm.Transaction.Span_count.add_started context.span_count 1;
+  Monitor.protect
+    (fun () -> report_exn f context)
+    ~finally:(fun () -> Deferred.return (Span.close context))
+;;
+
+let init_reporter host service =
+  let reporter =
+    let metadata = Elastic_apm.Metadata.make service in
+    Elastic_apm_async_reporter.Reporter.create host metadata
+  in
+  set_reporter (Some reporter)
+;;
