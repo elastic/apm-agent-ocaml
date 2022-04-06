@@ -78,7 +78,7 @@
   blue_http
   (elastic-apm
    (= :version))
-  (elastic-apm-lwt-reporter
+  (elastic-apm-async-reporter
    (= :version))))
 
 (package
