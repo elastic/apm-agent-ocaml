@@ -20,7 +20,7 @@ depends: [
   "async"
   "blue_http"
   "elastic-apm" {= version}
-  "elastic-apm-lwt-reporter" {= version}
+  "elastic-apm-async-reporter" {= version}
   "odoc" {with-doc}
 ]
 build: [
