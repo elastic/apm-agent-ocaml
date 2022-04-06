@@ -1,5 +1,7 @@
 include Elastic_apm.Reporter_intf.S
 
+module Log : Async.Log.Global_intf
+
 module Host : sig
   type t
 

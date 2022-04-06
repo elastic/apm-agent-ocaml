@@ -66,17 +66,27 @@ let send_events (spec : Spec.t) headers events =
     (Cohttp.Code.code_of_status (Cohttp.Response.status resp))
 ;;
 
-let read spec =
+let read spec reader =
   let headers = Spec.to_headers spec in
-  fun reader ->
-    match%bind
-      Pipe.read' ~max_queue_length:spec.max_messages_per_batch reader
-    with
-    | `Eof -> Deferred.unit
-    | `Ok queue ->
-      let requests = Queue.to_list queue in
-      let payload = Elastic_apm.Request.Metadata spec.metadata :: requests in
-      send_events spec headers payload
+  Deferred.repeat_until_finished () (fun () ->
+      match%bind
+        Pipe.read' ~max_queue_length:spec.max_messages_per_batch reader
+      with
+      | `Eof -> return (`Finished ())
+      | `Ok queue ->
+        let requests = Queue.to_list queue in
+        let payload = Elastic_apm.Request.Metadata spec.metadata :: requests in
+        ( match%map
+            Monitor.try_with (fun () -> send_events spec headers payload)
+          with
+        | Ok () -> `Repeat ()
+        | Error exn ->
+          Log.error
+            !"Error while pushing events to APM server: %{sexp: Exn.t}"
+            exn;
+          `Repeat ()
+        )
+  )
 ;;
 
 let create ?client ?max_messages_per_batch host metadata =
@@ -85,6 +95,7 @@ let create ?client ?max_messages_per_batch host metadata =
 ;;
 
 let push t event =
-  Log.debug "Pushing event";
-  Pipe.write_without_pushback t event
+  if Pipe.is_closed t then
+    Log.error "No events will be pushed as the APM reporter is down";
+  Pipe.write_without_pushback_if_open t event
 ;;
