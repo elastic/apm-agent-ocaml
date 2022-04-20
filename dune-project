@@ -56,7 +56,7 @@
   cohttp-lwt-unix
   (elastic-apm
    (= :version))
-  (elastic-apm-async-reporter
+  (elastic-apm-lwt-reporter
    (= :version))))
 
 (package
