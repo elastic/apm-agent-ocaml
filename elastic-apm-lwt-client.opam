@@ -21,7 +21,7 @@ depends: [
   "lwt_ppx"
   "cohttp-lwt-unix"
   "elastic-apm" {= version}
-  "elastic-apm-async-reporter" {= version}
+  "elastic-apm-lwt-reporter" {= version}
   "odoc" {with-doc}
 ]
 build: [

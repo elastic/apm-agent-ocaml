@@ -56,7 +56,7 @@
   cohttp-lwt-unix
   (elastic-apm
    (= :version))
-  (elastic-apm-async-reporter
+  (elastic-apm-lwt-reporter
    (= :version))))
 
 (package
@@ -64,7 +64,8 @@
  (depends
   (ocaml
    (>= 4.12.0))
-  async
+  (async
+   (< v0.15.0))
   blue_http
   (elastic-apm
    (= :version))))
@@ -75,7 +76,6 @@
   (ocaml
    (>= 4.12.0))
   async
-  blue_http
   (elastic-apm
    (= :version))
   (elastic-apm-async-reporter

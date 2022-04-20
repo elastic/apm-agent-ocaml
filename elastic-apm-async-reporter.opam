@@ -17,7 +17,7 @@ bug-reports: "https://github.com/elastic/apm-agent-ocaml/issues"
 depends: [
   "dune" {>= "2.9"}
   "ocaml" {>= "4.12.0"}
-  "async"
+  "async" {< "v0.15.0"}
   "blue_http"
   "elastic-apm" {= version}
   "odoc" {with-doc}
